@@ -1,0 +1,37 @@
+# LaTeX build files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.run.xml
+*.nav
+*.snm
+
+# LaTeX intermediate backups
+*.bak
+*.sav
+*.tmp
+*~
+
+# PDF and other compiled outputs
+*.dvi
+*.ps
+
+# Mac / Windows system files
+.DS_Store
+Thumbs.db
+
+# VSCode / JetBrains IDE
+.vscode/
+.idea/

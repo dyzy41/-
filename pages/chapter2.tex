@@ -85,7 +85,7 @@ Peixian耕地变化检测（PX-CLCD）数据集~\cite{miao_snunet3_2024}最初�
 \subsection{针对水体区域的变化检测数据集}
 Water-CD 数据集~\cite{j_li_trsanet_2024}旨在促进水体变化检测，填补了变化检测任务在水体变化检测中的空白。如图~\ref{fig:watercd}所示，Water-CD 数据集包含来自中国长江流域的季节性湖泊，以及南亚朱姆纳河等地的各种季节性水体。Water-CD数据集卫星影像获取了空间分辨率为 10 m 的双时相遥感数据，包含红光（R）、绿光（G）和近红外（NIR）波段，影像均为 2016–2022 年间雨季和旱季拍摄的无云图像。Water-CD水体变化检测图像数据集包含 1149 对双时相影像，每对影像的尺寸为 512 × 512。
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=0.75\textwidth]{paper_figures/变化检测任务与实验方法介绍/watercd.png}
   \caption{Water-CD 数据集展示.}
@@ -96,7 +96,7 @@ Water-CD 数据集~\cite{j_li_trsanet_2024}旨在促进水体变化检测，填�
 \subsubsection{CDD数据集}
 CDD变化检测数据集~\cite{Lebedev2018CHANGEDI}包含显示同一区域季节变化的卫星图像。该数据集通过收集来自Google Earth的数据创建，包括分辨率范围从0.03米到1米的图像。数据集中的图像被随机裁剪为256×256的大小。裁剪后，数据集被划分为训练集、验证集和测试集。训练集包含10000张图像，而验证集和测试集各包含3000张图像。该数据集旨在测试变化检测模型在同一区域随时间变化时识别变化的能力。如图~\ref{fig:cdd}所示，数据集包含多种变化类型，如城市发展、植被变化和水体变化，因此它是评估变化检测模型在不同场景下表现的有用工具。
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=0.75\textwidth]{paper_figures/变化检测任务与实验方法介绍/cdd.png}
   \caption{CDD 数据集展示.}
@@ -106,14 +106,14 @@ CDD变化检测数据集~\cite{Lebedev2018CHANGEDI}包含显示同一区域季�
 \subsubsection{SYSU数据集}
 SYSU-CD数据集~\cite{shi_deeply_2022}是一个包含20000对高分辨率航拍图像的集合，每张图像大小为256×256像素，图像采集自2007至2014年间的香港。该数据集包含多种变化类型，包括新建城市建筑、郊区扩展、建设前的地面准备、植被变化、道路扩展以及海上建筑等。如图~\ref{fig:sysu}所示，SYSU-CD数据集高度代表了城市变化，涵盖了大多数在城市环境中发生的变化类型。该数据集被划分为三部分：训练集、验证集和测试集，分别包含12000对、4000对和4000对图像。这种划分遵循了常用的实验程序。SYSU-CD数据集为评估和比较不同类型城市变化的变化检测算法性能提供了宝贵的资源。
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=0.75\textwidth]{paper_figures/变化检测任务与实验方法介绍/sysu.png}
   \caption{SYSU-CD 数据集展示.}
   \label{fig:sysu}
 \end{figure}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=0.75\textwidth]{paper_figures/变化检测任务与实验方法介绍/msrscd.png}
   \caption{MSRSCD 数据集展示.}
@@ -124,7 +124,7 @@ SYSU-CD数据集~\cite{shi_deeply_2022}是一个包含20000对高分辨率航拍
 \subsubsection{MSRSCD数据集}
 MSRSCD数据集~\cite{Liu2025NetworkAD}在图像分辨率、变化类型、数据集大小和变化维度方面显著补充了现有的遥感影像变化检测数据集，进一步为变化检测任务提供了新的基准。该数据集包括2019年至2023年间在中国南方城市捕获的841对遥感图像，每张图像大小为1024×1024像素，空间分辨率为0.5米。数据集按照7:1:2的比例分为训练集、验证集和测试集。如图~\ref{fig:msrscd}所示，数据集中的主要变化类型包括新建筑、郊区扩张、植被变化和道路建设。
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=0.75\textwidth]{paper_figures/变化检测任务与实验方法介绍/mlcd.png}
   \caption{MLCD 数据集展示.}
@@ -135,7 +135,7 @@ MSRSCD数据集~\cite{Liu2025NetworkAD}在图像分辨率、变化类型、数�
 MLCD数据集~\cite{Huang2025SAMBasedEF}（Macao Land Change Detection）聚焦于澳门地区2008至2023年间的土地填海与植被动态变化，基于Google Earth Engine影像构建。如图~\ref{fig:mlcd}所示，该数据集包含10,000对已标注的$256\times256$遥感影像，空间分辨率为0.5–2米，为海岸地貌与土地利用演变研究提供了新的基准。
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{本文所选用的遥感影像变化检测数据集概览}
 \label{tab:change_detection_datasets_review}

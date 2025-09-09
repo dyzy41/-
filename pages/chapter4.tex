@@ -4,9 +4,9 @@
 在计算机视觉领域，许多深度学习模型依赖于在 ImageNet 等自然场景数据集上的大规模预训练。然而，自然场景图像与遥感影像之间存在显著差异。如图~\ref{fig:changeclip2}所示，前者通常来自水平或倾斜视角拍摄，呈现明显的透视效应和单一目标结构。而后者多为垂直俯视获取，涵盖范围广泛、尺度跨度大，且地物之间紧密排列。此外，遥感影像还具有多源、多分辨率、多时相等特性，这些因素使得直接将基于 ImageNet 预训练的模型迁移到遥感任务中往往存在域偏移现象。随着现如今 AI 基础模型的发展，一些基础模型通常会基于海量样本进行训练。比如，CLIP模型~\cite{Radford2021LearningTV}包含 4 亿（400 million）图像‑文本对用于自监督训练。SAM 模型~\cite{Kirillov2023SegmentA}包含1100 万分割图像数据，涉及到11 亿个分割掩码，用于创建大型的图像分割模型。DINOv2~\cite{Oquab2023DINOv2LR} 于 2023 年训练时使用了 1 亿 4 千万张无标签图像进行自监督训练，最新的 DINOv3~\cite{simeoni2025dinov3} 训练规模进一步扩大，训练数据集达到 170 亿 图像规模。因此，此类的 AI 基础模型通常具有非常强大的数据泛化能力，同时针对遥感影像也具有极强的无监督泛化能力。为此，在本章中，本章针对遥感场景特点开展基于 AI 基础模型的变化检测研究。具体而言，本章一方面探索了结合 CLIP 架构的多模态变化检测模型，另一方面探索了如何通过参数高效微调与领域自适应策略，使视觉基础预训练模型能够更好地适配遥感数据特性，从而提升在多源、多尺度和多时相条件下的遥感影像变化检测性能。
 
 \section{基于多模态架构的变化检测方法}
-\subsection{引言}
+\subsection{结合多模态的变化检测方法概述}
 
-在遥感影像变化检测（RSCD）领域，Siamese神经网络是最流行的基线方法~\cite{Koch2015SiameseNN, Wang2022AnES}。Siamese神经网络采用并行结构，具有两个相同的子网络，可以提取稳健且具辨识性的特征，并直接输出变化结果。基于这一结构，许多变化检测方法应运而生，有的应用卷积神经网络（CNN）~\cite{chen2023continuous, Tian2022LargescaleDL, zhu_land-useland-cover_2022-1}，有的采用Transformer架构~\cite{chen_remote_2022, Li2022TransUNetCDAH, Liu2022RemoteSI}。然而，这些方法仅考虑了单一模态的数据，即图像，而忽视了多模态数据中的丰富语义信息，因此面临瓶颈。为了解决这些限制，探索一个基于基础模型的多模态RSCD框架是十分必要的。
+在遥感影像变化检测（Remote Sensing Change Detection，RSCD）领域，Siamese神经网络是最流行的基线方法~\cite{Koch2015SiameseNN, Wang2022AnES}。Siamese神经网络采用并行结构，具有两个相同的子网络，可以提取稳健且具辨识性的特征，并直接输出变化结果。基于这一结构，许多变化检测方法应运而生，有的应用卷积神经网络（CNN）~\cite{chen2023continuous, Tian2022LargescaleDL, zhu_land-useland-cover_2022-1}，有的采用Transformer架构~\cite{chen_remote_2022, Li2022TransUNetCDAH, Liu2022RemoteSI}。然而，这些方法仅考虑了单一模态的数据，即图像，而忽视了多模态数据中的丰富语义信息，因此面临瓶颈。为了解决这些限制，探索一个基于基础模型的多模态RSCD框架是十分必要的。
 
 近年来，视觉-语言表征学习成为计算机视觉中的一个热门研究课题，该方法通过深度学习模型从图像-文本对中学习表征。得益于这种模式，这种方法已在许多多模态任务中取得了进展，如图像描述~\cite{Chen2021VisualGPTDA}、视觉问答~\cite{Song2022CLIPMA}和跨模态检索~\cite{Tang2023InteractingEnhancingFT}。例如，Visual-BERT模型扩展了BERT~\cite{Devlin2019BERTPO}，通过双流结构对图像和文本进行编码，并从多模态层捕获丰富的语义信息。在遥感领域，Rahhal等人~\cite{AlRahhal2022MultilanguageTF}采用Transformer网络作为编码器，处理图像和文本描述，用于精确的遥感图像检索。Liu等人~\cite{Liu2022RemoteSI}提出了LEVIR变化描述数据集，并引入文本描述表示遥感图像中的变化区域。特别地，CLIP~\cite{Radford2021LearningTV}通过图像-文本对的对比学习，展示了强大的图像识别能力和显著的零-shot适应性。
 
@@ -27,7 +27,7 @@
 
 
 
-本章将CLIP引入RSCD任务，并提出了一个多模态变化检测框架，命名为ChangeCLIP，如图~\ref{fig:changeclip1}所示。在多模态变化检测任务中，通常使用单一模态，主要是遥感影像，来识别变化。为了结合基于文本的提示信息，利用CLIP模型基于56个常见的地表覆盖分类生成描述性提示，如表I所示。这些分类涵盖了遥感数据集中常见的目标元素。本章进一步将这56种类型归类为更广泛的分类，以便参考，如表~\ref{tab:remote_sensing_categories}所示。如图~\ref{fig:changeclip2}的文本框所示，为遥感图像的前景和背景特征设计了特定的提示，利用CLIP模型作为基础。通过这种方式，构建了一个基本数据集，丰富了用于变化检测任务的多模态先验信息。在图像编码阶段，本章构建了一个Siamese神经网络，从双时相遥感影像中提取图像特征。在文本编码阶段，本章应用Transformer网络从文本提示中提取文本特征。为了充分利用多模态特征学习的优势，本章在ChangeCLIP中有效地结合了视觉和文本特征。此外，本章提出了一种新颖的差异特征补偿（Differential Feature Compensation，DFC）模块，用于输出语义变化。本章的主要贡献如下： (1) 本章所提出的ChangeCLIP是首个将多模态视觉-语言方案应用于RSCD任务的工作。 (2) 提出了一种新颖的差异特征补偿模块，用于从双时相图像特征中捕获稳健的语义变化。 (3) 设计了一种基于Transformer的多模态解码器，以增强图像-文本特征对之间的语义关系。 (4) 所提出的ChangeCLIP在LEVIR-CD、LEVIR-CD+、CDD、SYSU-CD和WHUCD数据集上达到了最先进的性能。
+本节将CLIP引入RSCD任务，并提出了一个多模态变化检测框架，命名为ChangeCLIP，如图~\ref{fig:changeclip1}所示。在多模态变化检测任务中，通常使用单一模态，主要是遥感影像，来识别变化。为了结合基于文本的提示信息，利用CLIP模型基于56个常见的地表覆盖分类生成描述性提示，如表I所示。这些分类涵盖了遥感数据集中常见的目标元素。本节进一步将这56种类型归类为更广泛的分类，以便参考，如表~\ref{tab:remote_sensing_categories}所示。如图~\ref{fig:changeclip2}的文本框所示，为遥感图像的前景和背景特征设计了特定的提示，利用CLIP模型作为基础。通过这种方式，构建了一个基本数据集，丰富了用于变化检测任务的多模态先验信息。在图像编码阶段，本节构建了一个Siamese神经网络，从双时相遥感影像中提取图像特征。在文本编码阶段，本节应用Transformer网络从文本提示中提取文本特征。为了充分利用多模态特征学习的优势，本节在ChangeCLIP中有效地结合了视觉和文本特征。此外，本节提出了一种新颖的差异特征补偿（Differential Feature Compensation，DFC）模块，用于输出语义变化。
 
 
 \begin{table}[!htbp]
@@ -55,7 +55,7 @@
 
 \subsection{ChangeCLIP网络设计}
 \subsubsection{ChangeCLIP总体结构设计}
-本研究中提出了一种创新的方法ChangeCLIP，利用大规模视觉-语言模型来处理遥感变化检测（RSCD）任务。如图~\ref{fig:changeclip3}所示，ChangeCLIP的综合框架分为四个主要部分：多模态数据、多模态编码器、差异特征补偿和视觉-语言驱动解码器。在第一个部分，利用CLIP模型的无监督分类能力为遥感影像生成文本提示，从而构建多模态输入数据，用于变化检测任务。第二部分，采用CLIP模型构建图像和文本编码器，作为多模态RSCD任务的基础双时相特征提取器。此外，将图像特征与文本特征相结合，有效补偿了传统单模态变化检测方法中的局限性。第三部分，为了增强模型捕捉双时相变化的能力，引入了差异特征补偿（DFC）模块。该模块利用多种计算方法表示差异特征，并通过特征图的加权融合，优化了对不同双时相影像差异的适应能力。在最后一个部分，充分利用从编码阶段获得的视觉-语言特征。通过将这些视觉-语言特征与解码阶段的特征相结合，设计了一个视觉-语言驱动的解码器。
+本节提出了一种创新的方法ChangeCLIP，利用大规模视觉-语言模型来处理遥感变化检测（RSCD）任务。如图~\ref{fig:changeclip3}所示，ChangeCLIP的综合框架分为四个主要部分：多模态数据、多模态编码器、差异特征补偿和视觉-语言驱动解码器。在第一个部分，利用CLIP模型的无监督分类能力为遥感影像生成文本提示，从而构建多模态输入数据，用于变化检测任务。第二部分，采用CLIP模型构建图像和文本编码器，作为多模态RSCD任务的基础双时相特征提取器。此外，将图像特征与文本特征相结合，有效补偿了传统单模态变化检测方法中的局限性。第三部分，为了增强模型捕捉双时相变化的能力，引入了差异特征补偿（DFC）模块。该模块利用多种计算方法表示差异特征，并通过特征图的加权融合，优化了对不同双时相影像差异的适应能力。在最后一个部分，充分利用从编码阶段获得的视觉-语言特征。通过将这些视觉-语言特征与解码阶段的特征相结合，设计了一个视觉-语言驱动的解码器。
 
 \begin{figure}[!htbp]
   \centering
@@ -64,7 +64,7 @@
 \end{figure}
 
 \subsubsection{多模态编码器}
-如今,计算机视觉和自然语言处理（NLP）越来越紧密地结合在一起,催生了许多将计算机视觉和NLP相结合的优秀项目~\cite{Chen2021VisualGPTDA, Lu2019ViLBERTPT}。在ChangeCLIP模型中,通过将CLIP的大规模图像-文本先验知识与变化检测相结合,提出了一种多模态遥感影像变化检测(RSCD)框架,如图\ref{fig:changeclip3}所示。由于当前没有像素级的变化检测数据集提供文本提示标签，本章利用CLIP的无监督预测能力来制定原始的遥感影像文本提示。具体而言,为了获得双时相影像的文本表示,本章使用CLIP模型对这56个类别进行预测,如表I所示。本章选择了具有最高置信度的9个类作为预测类别。因此,前景的文本描述设置为``遥感影像前景物体,\{预测类别\}'', 而``遥感影像背景物体''作为背景的文本描述。本章的目标是变化区域,因此使用预测类别组成前景的文本提示,正如上述所提到的那样。通过这种方式,变化物体可以通过双时相文本提示直接展示,而双时相文本提示提供了遥感先验知识。最终,ChangeCLIP的输入由两对并行的图像编码器和文本编码器组成。
+如今,计算机视觉和自然语言处理（NLP）越来越紧密地结合在一起,催生了许多将计算机视觉和NLP相结合的优秀项目~\cite{Chen2021VisualGPTDA, Lu2019ViLBERTPT}。在ChangeCLIP模型中,通过将CLIP的大规模图像-文本先验知识与变化检测相结合,提出了一种多模态遥感影像变化检测(RSCD)框架,如图\ref{fig:changeclip3}所示。由于当前没有像素级的变化检测数据集提供文本提示标签，本节利用CLIP的无监督预测能力来制定原始的遥感影像文本提示。具体而言,为了获得双时相影像的文本表示,本节使用CLIP模型对这56个类别进行预测,如表I所示。本节选择了具有最高置信度的9个类作为预测类别。因此,前景的文本描述设置为``遥感影像前景物体,\{预测类别\}'', 而``遥感影像背景物体''作为背景的文本描述。本节的目标是变化区域,因此使用预测类别组成前景的文本提示,正如上述所提到的那样。通过这种方式,变化物体可以通过双时相文本提示直接展示,而双时相文本提示提供了遥感先验知识。最终,ChangeCLIP的输入由两对并行的图像编码器和文本编码器组成。
 
 图像编码器和文本编码器从 CLIP 模型的图像编码器和文本编码器中选取，以有效利用 CLIP 模型强大的图像–文本建模能力。在特征提取阶段，双流图像编码器获得两组特征金字塔$\{F_{a1},F_{a2},F_{a3},F_{a4}\}$ 和 $\{F_{b1},F_{b2},F_{b3},F_{b4}\}$，分别表示双时相的多级特征。在计算机视觉中，深度网络的特征维度较高且具有更强的判别能力，因此通常认为高层次图像特征能够表征图像的语义信息。因此，将高层次语义特征图与文本序列特征相结合。为了结合高层次语义特征图与文本序列特征，ResNet~\cite{He2015DeepRL}主干和 ViT~\cite{Dosovitskiy2020AnII}主干有所区别：在 ResNet 的情况下，使用注意力池化模块生成高层次语义特征，将其视为图像序列特征；而在 ViT 中，则直接将高层次特征作为图像序列特征。这种在 ViT 中的图像序列特征与文本序列特征的对齐有助于促进两种模态之间更紧密的表示。来自 ViT 主干的图像序列特征天然地与文本序列特征对齐，增强了模型捕捉两种模态内在关系和语义一致性的能力。相比 ResNet 主干，ViT 在多模态任务上通常具有更好的表征能力。以 ResNet 为例来描述该部分的计算步骤，因为 ResNet 的序列特征提取算法相较 ViT 更为复杂。视觉编码过程结束时，使用注意力池化模块对高层次特征图进行视觉嵌入，以构建图像序列特征。进一步地，在多模态特征提取阶段有效地结合图像信息和文本信息，共同更新多模态特征提取的权重。计算步骤如下：
 \begin{align}
@@ -88,15 +88,15 @@ t_3 &= t_2 + \gamma \times \hat t_2 \label{eq:changeclip-11}\\
 \mathrm{score\_map} &= \eta(t_3)\times \eta(V') \label{eq:changeclip-12}
 \end{align}
 
-其中，\(t_1\) 是文本 token；\(F_{\mathrm{te}}\) 是基于 Transformer 的文本编码器；\(t_2\) 是 Transformer 生成的文本嵌入；\(V\) 表示将 \(\mathrm{global\_feature}\) 和 \(\mathrm{visual\_embedding}\) 结合后的特征表示；\(F_{\mathrm{cd}}\) 是图像特征序列与文本嵌入之间进行上下文解码的解码器；通过 \(F_{\mathrm{cd}}\) 的计算，图像特征序列和文本嵌入得以通过上下文解码器中的 Transformer 块有效结合，而 \(\hat t_2\) 是 \(F_{\mathrm{cd}}\) 的输出。在公式 \eqref{eq:changeclip-11} 中，通过可学习系数 \(\gamma\) 将 \(\hat t_2\) 与 \(t_2\) 相结合，以有效关联图像特征与文本特征。于是，包含文本与图像信息的 \(t_3\) 可以表征图像视觉特征与文本语义特征结合后的信息。因此，在解码阶段将 \(t_3\) 作为视觉–语言特征的补充，与解码中的视觉特征 \(V'\) 结合。\(V'\) 是在图像编码阶段从高层次语义特征计算得到的 \(\mathrm{visual\_embedding}\)，\(\eta\) 是归一化函数。通过上述计算方法得到逐像素—文本的 \(\mathrm{score\_map}\)。\(\mathrm{score\_map}\) 表示图像视觉嵌入与文本特征序列之间的关系。在本章中，\(\mathrm{score\_map}\) 与图像特征提取中的高层次语义特征结合，以补充高层次语义特征中的文本相关语义信息，使高层次语义特征图更加具有判别力。
+其中，\(t_1\) 是文本 token；\(F_{\mathrm{te}}\) 是基于 Transformer 的文本编码器；\(t_2\) 是 Transformer 生成的文本嵌入；\(V\) 表示将 \(\mathrm{global\_feature}\) 和 \(\mathrm{visual\_embedding}\) 结合后的特征表示；\(F_{\mathrm{cd}}\) 是图像特征序列与文本嵌入之间进行上下文解码的解码器；通过 \(F_{\mathrm{cd}}\) 的计算，图像特征序列和文本嵌入得以通过上下文解码器中的 Transformer 块有效结合，而 \(\hat t_2\) 是 \(F_{\mathrm{cd}}\) 的输出。在公式 \eqref{eq:changeclip-11} 中，通过可学习系数 \(\gamma\) 将 \(\hat t_2\) 与 \(t_2\) 相结合，以有效关联图像特征与文本特征。于是，包含文本与图像信息的 \(t_3\) 可以表征图像视觉特征与文本语义特征结合后的信息。因此，在解码阶段将 \(t_3\) 作为视觉–语言特征的补充，与解码中的视觉特征 \(V'\) 结合。\(V'\) 是在图像编码阶段从高层次语义特征计算得到的 \(\mathrm{visual\_embedding}\)，\(\eta\) 是归一化函数。通过上述计算方法得到逐像素—文本的 \(\mathrm{score\_map}\)。\(\mathrm{score\_map}\) 表示图像视觉嵌入与文本特征序列之间的关系。在本节中，\(\mathrm{score\_map}\) 与图像特征提取中的高层次语义特征结合，以补充高层次语义特征中的文本相关语义信息，使高层次语义特征图更加具有判别力。
 
 \subsubsection{结合余弦相似度计算的混合差异特征计算方法}
 
-传统的变化检测方法通常基于语义分割来进行任务处理。然而,这种方法存在一个缺点,即忽略了任务中最重要的变化特征。变化检测的主要关注点是遥感影像在不同时间段的变化区域,而不是特定的语义类别。通过使用语义分割,重点在于将像素分类为不同的语义类别,这对于遥感影像中的变化检测并不适用。因此,遥感影像变化检测(RSCD)的核心在于模型对变化特征的表示能力。为了解决这个问题,提出了一种新型的差异特征补偿(DFC)模块,该模块基于不同时间段遥感影像的差异特征计算,如图4所示。通过DFC模块,网络可以专注于通过不同的特征计算模块学习双时相遥感影像的变化特征,而不是语义类别。因此,本章提出的方法比依赖语义分割的传统方法更能针对遥感影像的变化检测。
+传统的变化检测方法通常基于语义分割来进行任务处理。然而,这种方法存在一个缺点,即忽略了任务中最重要的变化特征。变化检测的主要关注点是遥感影像在不同时间段的变化区域,而不是特定的语义类别。通过使用语义分割,重点在于将像素分类为不同的语义类别,这对于遥感影像中的变化检测并不适用。因此,遥感影像变化检测(RSCD)的核心在于模型对变化特征的表示能力。为了解决这个问题,提出了一种新型的差异特征补偿(DFC)模块,该模块基于不同时间段遥感影像的差异特征计算,如图4所示。通过DFC模块,网络可以专注于通过不同的特征计算模块学习双时相遥感影像的变化特征,而不是语义类别。因此,本节提出的方法比依赖语义分割的传统方法更能针对遥感影像的变化检测。
 
 具体来说,双时相遥感影像在空间上表现出一致性,但在地理上存在时间差异。在这一阶段,常见的双时相特征融合策略是使用Concat计算方法。从深度学习的理论基础出发,Concat的计算方法只是将双时相特征图合并,差异特征的体现通过反向传播算法学习。在双时相特征融合中,Concat并没有突出差异特征在RSCD任务中的重要性。因此,我们考虑使用另外两种更直接的差异特征计算方法。对于双时相特征,特征的差异主要体现在两个方面,一方面是像素特征序列的数值差异,如减法。另一方面是基于余弦相似度的像素特征序列在高维空间中的语义差异。对于前者,简单的减法计算方法可以更好地表达高层特征图中的差异。但在低层特征图中,由于不同时间阶段的相同类型地物可能具有较大的颜色差异,减法计算方法很难准确表达变化特征。对于后者,余弦相似度可以有效捕捉高维向量的相似性。在双时相特征分析的背景下,余弦相似度弥补了减法在表示向量方向差异方面的不足。因此,从差异表示的角度来看,减法和余弦相似度是互补的。
 
-基于上述分析，本章设计了用于差异学习的 DFC 模块。首先，通过特征图相减计算差异。由于算法的识别目标是变化区域，单纯的特征图相减结果无法充分表达该区域在语义上的特征。因此，为更好地适配双时相图像变化的特点，对相减结果取绝对值，以更好地表达通过相减获得的兴趣区域显著图，并引入卷积模块，使网络能够自适应地优化相减后的特征图。由此生成的特征图能够突出显示变化区域的特征。与此同时，考虑到余弦距离能够在高维空间中表示不同特征向量的相似性，设计了另一种基于余弦距离的特征差异计算模块。综上，DFC 的计算步骤如下：
+基于上述分析，本节设计了用于差异学习的 DFC 模块。首先，通过特征图相减计算差异。由于算法的识别目标是变化区域，单纯的特征图相减结果无法充分表达该区域在语义上的特征。因此，为更好地适配双时相图像变化的特点，对相减结果取绝对值，以更好地表达通过相减获得的兴趣区域显著图，并引入卷积模块，使网络能够自适应地优化相减后的特征图。由此生成的特征图能够突出显示变化区域的特征。与此同时，考虑到余弦距离能够在高维空间中表示不同特征向量的相似性，设计了另一种基于余弦距离的特征差异计算模块。综上，DFC 的计算步骤如下：
 \begin{align}
 F_{\mathrm{sub}} &= \sigma\bigl(\lvert F_a - F_b\rvert\bigr) \label{eq:changeclip-13}\\
 \varphi &= \frac{x_1 \cdot x_2}{\max\bigl(\lVert x_1\rVert_2 \cdot \lVert x_2\rVert_2,\ \varepsilon\bigr)},\quad x_1\in F_a,\ x_2\in F_b,\ \varepsilon=1\times10^{-8} \label{eq:changeclip-14}\\
@@ -105,11 +105,11 @@ X &= \mathrm{FPN}\bigl(\mathrm{concat}(F_a, F_b)\bigr) \label{eq:changeclip-16}\
 \hat X &= \mathrm{CA}\bigl(\mathrm{concat}(X \times m,\ F_{\mathrm{sub}},\ X)\bigr) \label{eq:changeclip-17}
 \end{align}
 
-其中，$F_a$、$F_b$ 是融合了不同时相视觉–语言信息的特征图；$\sigma$ 表示卷积模块；$F_{\mathrm{sub}}$ 为特征图相减后取绝对值得到的差异图；$\varphi$ 表示余弦相似度计算；$\varepsilon$ 为防止分母为零的极小常数；$m$ 是通过双时相特征图的余弦相似度图计算得到的差异图。采用 FPN 模型~\cite{lin_feature_2017}来融合多层级信息；$\hat X$ 为不同计算方法生成的差异特征；CA~\cite{Hu2017SqueezeandExcitationN}为通道注意力模块，用于融合上述方法生成的特征。正如上述所示，本章改变了传统变化检测算法的常规做法，深入探索并成功集成了多种变异特征提取方法。特征图相减虽保留了差异特征的基本计算方式，却牺牲了原始特征图的语义信息；而特征图拼接则保留了完整的双时相特征信息，却缺乏差异特征的显式表征，需要在整个网络中进行学习。为此，引入了基于余弦相似度的计算方案，利用余弦相似度刻画双时相特征的差异图。通过结合特征相减、特征融合与相似性特征学习，网络涵盖多种判别性特征学习策略。此外，在此基础上引入注意力机制，以自适应地控制三种差异特征表示的重要性。该注意力机制能够根据变化区域的重要性自动调整差异特征的权重分布，从而增强网络对变化特征的感知能力。
+其中，$F_a$、$F_b$ 是融合了不同时相视觉–语言信息的特征图；$\sigma$ 表示卷积模块；$F_{\mathrm{sub}}$ 为特征图相减后取绝对值得到的差异图；$\varphi$ 表示余弦相似度计算；$\varepsilon$ 为防止分母为零的极小常数；$m$ 是通过双时相特征图的余弦相似度图计算得到的差异图。采用 FPN 模型~\cite{lin_feature_2017}来融合多层级信息；$\hat X$ 为不同计算方法生成的差异特征；CA~\cite{Hu2017SqueezeandExcitationN}为通道注意力模块，用于融合上述方法生成的特征。正如上述所示，本节改变了传统变化检测算法的常规做法，深入探索并成功集成了多种变异特征提取方法。特征图相减虽保留了差异特征的基本计算方式，却牺牲了原始特征图的语义信息；而特征图拼接则保留了完整的双时相特征信息，却缺乏差异特征的显式表征，需要在整个网络中进行学习。为此，引入了基于余弦相似度的计算方案，利用余弦相似度刻画双时相特征的差异图。通过结合特征相减、特征融合与相似性特征学习，网络涵盖多种判别性特征学习策略。此外，在此基础上引入注意力机制，以自适应地控制三种差异特征表示的重要性。该注意力机制能够根据变化区域的重要性自动调整差异特征的权重分布，从而增强网络对变化特征的感知能力。
 
 \subsubsection{视觉-语言驱动的变化检测解码器}
 
-在ChangeCLIP 模型,利用了Swin Transformer~\cite{Liu2021SwinTH}模块,在解码阶段建立了全局注意力关系,从而增强了ChangeCLIP的特征表示能力。此外,本章还提出了一种视觉-语言驱动的解码器,通过引入低秩双线性注意力模块,将编码阶段的视觉-语言特征与解码阶段的图像特征结合,从而补充了解码阶段的语义特征。编码阶段的视觉-语言特征学习了来自图像和文本的丰富语义信息。通过将这些语义信息融入解码阶段,模型能够更好地识别变化区域,并提高整体性能。低秩双线性注意力模块的计算步骤如下：
+在ChangeCLIP 模型,利用了Swin Transformer~\cite{Liu2021SwinTH}模块,在解码阶段建立了全局注意力关系,从而增强了ChangeCLIP的特征表示能力。此外,本节还提出了一种视觉-语言驱动的解码器,通过引入低秩双线性注意力模块,将编码阶段的视觉-语言特征与解码阶段的图像特征结合,从而补充了解码阶段的语义特征。编码阶段的视觉-语言特征学习了来自图像和文本的丰富语义信息。通过将这些语义信息融入解码阶段,模型能够更好地识别变化区域,并提高整体性能。低秩双线性注意力模块的计算步骤如下：
 \begin{align}
 q &= W_I \cdot I \label{eq:changeclip-18}\\
 k &= W_T \cdot T \label{eq:changeclip-19}\\
@@ -129,14 +129,14 @@ v &= W_V \cdot T \label{eq:changeclip-20}\\
 
 为了增强 ChangeCLIP 在解码阶段的学习能力，基于 Swin Transformer 块设计了逐层的多级特征融合结构。该结构将高层特征信息传递至低层，并在每个融合级别使用 Swin Transformer 块提升解码表征能力。如图~\ref{fig:changeclip4}所示，详细介绍了 ChangeCLIP 的视觉–语言驱动解码器。在编码阶段，ChangeCLIP 将文本语义信息与图像特征图融合；在解码阶段，对双时相遥感影像的不同特征应用多级特征融合的多模态解码模块，最终获得解码预测结果。其计算步骤如下：
 \begin{align}
-F_3 &= \mathrm{concat}\bigl(f(D_4,\;\text{text}),\;D_3\bigr)\,, \label{eq:changeclip-23}\\
-F_2 &= \mathrm{concat}\bigl(f(F_3,\;\text{text}),\;D_2\bigr)\,, \label{eq:changeclip-24}\\
-F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:changeclip-25}\\
-\mathrm{output} &= \mathrm{Upsample}(F_1)\,. \label{eq:changeclip-26}
+F_3 &= \mathrm{concat}\bigl(f(D_4,\;\text{text}),\;D_3\bigr)\, \label{eq:changeclip-23}\\
+F_2 &= \mathrm{concat}\bigl(f(F_3,\;\text{text}),\;D_2\bigr)\, \label{eq:changeclip-24}\\
+F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\, \label{eq:changeclip-25}\\
+\mathrm{output} &= \mathrm{Upsample}(F_1)\, \label{eq:changeclip-26}
 \end{align}
 其中，$D_1, D_2, D_3, D_4$ 是由 DFC 模块生成的不同特征图，$\text{text}$ 是编码阶段提取的双时相视觉–语言特征序列；$f$ 表示 Swin Transformer 块，$\mathrm{output}$ 是通过上采样操作得到的最终预测结果。
 
-总而言之,本章提出了一种强大的视觉-语言驱动解码器,应用于遥感影像变化检测(RSCD)任务中。视觉-语言驱动解码器利用Swin Transformer模块建立全局注意力关系,从而能够在不同层级上对差异特征图进行优化解码,增强了模型在解码阶段的特征表示能力。为了进一步增强解码阶段的表现,引入了一个低秩双线性注意力模块。该模块有效地将编码阶段的视觉-语言特征与解码阶段的视觉特征结合,通过补充解码阶段的语义特征,使得模型能够从遥感影像中提取重要的变化特征,从而实现更精确的变化检测。最后,设计了一个逐层结构来构建解码模块。基于Swin Transformer模块的逐层特征融合结构确保了特征信息从高层到低层的传递,从而保证了在解码阶段能够全面利用重要特征,提升了遥感影像变化检测的性能。总体而言,ChangeCLIP在RSCD任务中利用了视觉-语言驱动的解码器。通过有效地整合视觉和文本信息,实现了对遥感影像变化的更好理解和检测。
+总而言之,本节提出了一种强大的视觉-语言驱动解码器,应用于遥感影像变化检测(RSCD)任务中。视觉-语言驱动解码器利用Swin Transformer模块建立全局注意力关系,从而能够在不同层级上对差异特征图进行优化解码,增强了模型在解码阶段的特征表示能力。为了进一步增强解码阶段的表现,引入了一个低秩双线性注意力模块。该模块有效地将编码阶段的视觉-语言特征与解码阶段的视觉特征结合,通过补充解码阶段的语义特征,使得模型能够从遥感影像中提取重要的变化特征,从而实现更精确的变化检测。最后,设计了一个逐层结构来构建解码模块。基于Swin Transformer模块的逐层特征融合结构确保了特征信息从高层到低层的传递,从而保证了在解码阶段能够全面利用重要特征,提升了遥感影像变化检测的性能。总体而言,ChangeCLIP在RSCD任务中利用了视觉-语言驱动的解码器。通过有效地整合视觉和文本信息,实现了对遥感影像变化的更好理解和检测。
 
 \subsection{实验结果与分析}
 
@@ -182,7 +182,7 @@ F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:change
     HMCNet~\cite{Wang2022HMCNetHE}                        & 99.07 & --    & --    & 83.05 & 90.74 & 89.82 & 91.68 \\
     AFCF3D-Net~\cite{Ye2023AdjacentLevelFC}                    & --    & --    & --    & 83.08 & 90.76 & 90.17 & 91.35 \\
     LGPNet~\cite{Liu2022BuildingCD}                        & 99.16 & --    & 91.38 & 83.63 & 91.09 & 89.38 & 92.87 \\
-    TransUNetCD                   & --    & --    & --    & 83.67 & 91.11 & 89.82 & 92.43 \\
+    TransUNetCD~\cite{Li2022TransUNetCDAH}                   & --    & --    & --    & 83.67 & 91.11 & 89.82 & 92.43 \\
     FHD~\cite{pei_feature_2022}                           & 99.10 & 95.33 & 91.39 & 83.72 & 91.14 & 90.32 & 91.97 \\
     DMATNet~\cite{Song2022RemoteSI}                       & 98.25 & --    & --    & 84.13 & 90.75 & 89.98 & 91.56 \\
     STransUNet~\cite{Yuan2022STransUNetAS}                    & 99.13 & --    & --    & 84.19 & 91.41 & 90.55 & 92.30 \\
@@ -215,7 +215,7 @@ F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:change
   \end{tabular*}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
   \centering
   \caption{ChangeCLIP 模型在 WHUCD 数据集上的定量结果}
   \label{tab:changeclip_whucd}
@@ -236,7 +236,7 @@ F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:change
   \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
   \centering
   \caption{ChangeCLIP 模型在 CDD 数据集上的定量结果}
   \label{tab:changeclip_cdd}
@@ -259,7 +259,7 @@ F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:change
   \end{tabular*}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
   \centering
   \caption{ChangeCLIP 模型在SYSU-CD数据集上的定量结果}
   \label{tab:changeclip_sysu}
@@ -322,19 +322,19 @@ F_1 &= \mathrm{concat}\bigl(f(F_2,\;\text{text}),\;D_1\bigr)\,, \label{eq:change
 
 具体来说,通过ME集成文本语义与基于视觉的基线相比,性能有所提升,突出了多模态的优势。显然,通过多模态信息补充图像信息,有助于增强模型对遥感图像中语义特征的理解。由于VLDD需要包括来自ME组件的视觉-语言信息,无法仅对Baseline+VLDD进行消融研究。因此,将Baseline+ME和Baseline+ME+VLDD的实验结果进行了比较。可以看出,VLDD在解码器中结合了文本和视觉表示,带来了额外的提升。
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \small
 \setlength{\tabcolsep}{2pt} % 紧凑列距
-\caption{基于 RN50 骨干的 IoU 消融实验。Base：仅用图像编码器；ME：多模态编码器；I：Image；T：Text；DFC：差异特征补偿；VLDD：视觉-语言驱动解码器；FPN：特征金字塔；FCN：全卷积；Sub：减法。}
+\caption{基于 RN50 骨干的 IoU 消融实验。Base：仅用图像编码器；ME：多模态编码器；I：Image Encoder；T：Text Encoder；DFC：差异特征补偿；VLDD：视觉-语言驱动解码器；FPN：特征金字塔；FCN：全卷积；Sub：减法。}
 \label{tab:changeclip_ablation_resnet}
 \begin{tabular}{@{}l c c c *{5}{c}@{}}
 \toprule
-\textbf{Model} & \textbf{Enc.} & \textbf{Neck} & \textbf{Dec.} &
-\makecell{\textbf{LEVIR}\\\textbf{CD}} &
-\makecell{\textbf{LEVIR}\\\textbf{CD+}} &
+\textbf{Model} & \textbf{Encoder} & \textbf{Neck} & \textbf{Decoder} &
+\makecell{\textbf{LEVIR-}\\\textbf{CD}} &
+\makecell{\textbf{LEVIR-}\\\textbf{CD+}} &
 \textbf{CDD} &
-\makecell{\textbf{SYSU}\\\textbf{CD}} &
+\makecell{\textbf{SYSU-}\\\textbf{CD}} &
 \textbf{WHU} \\
 \midrule
 Base            & I     & FPN       & FCN  & 75.25 & 68.61 & 89.74 & 61.71 & 87.56 \\
@@ -348,7 +348,7 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 85.20 & 73.61 & 95.87 & 70.53 & 90.
 \end{table}
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \small
 \setlength{\tabcolsep}{2pt}
@@ -356,11 +356,11 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 85.20 & 73.61 & 95.87 & 70.53 & 90.
 \label{tab:changeclip_ablation_vit}
 \begin{tabular}{@{}l c c c *{5}{c}@{}}
 \toprule
-\textbf{Model} & \textbf{Enc.} & \textbf{Neck} & \textbf{Dec.} &
-\makecell{\textbf{LEVIR}\\\textbf{CD}} &
-\makecell{\textbf{LEVIR}\\\textbf{CD+}} &
+\textbf{Model} & \textbf{Encoder} & \textbf{Neck} & \textbf{Decoder} &
+\makecell{\textbf{LEVIR-}\\\textbf{CD}} &
+\makecell{\textbf{LEVIR-}\\\textbf{CD+}} &
 \textbf{CDD} &
-\makecell{\textbf{SYSU}\\\textbf{CD}} &
+\makecell{\textbf{SYSU-}\\\textbf{CD}} &
 \textbf{WHU} \\
 \midrule
 Base            & I     & FPN       & FCN  & 74.73 & 68.16 & 88.77 & 64.82 & 79.22 \\
@@ -378,7 +378,7 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 83.99 & 75.63 & 95.78 & 71.41 & 90.
 
 有趣的是,DFC本身的表现几乎与ME相同,这表明在ChangeCLIP中,变化特征建模和多模态信息对变化检测任务的影响是相等的。将减法作为双时相图像融合方法在FPN之前的效果比Concat更差。这可能是因为直接使用特征减法会丢失大部分双时相图像的信息,使得网络难以学习变化的表示。包含所有组件的完整ChangeCLIP模型达到了最佳结果,每个模块提供了互补的优势。总之,广泛消融分析定量展示了ChangeCLIP中提出的多模态编码器、差异特征补偿模块和视觉-语言驱动解码器的独特贡献。通过与消融版本和基线模型的准确性提升,验证了ChangeCLIP 模型中的创新。
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
   \centering
   \caption{ChangeCLIP模型在RSCD数据集上基于ResNet-50和ViT-B/16骨干模型的结果}
   \label{tab:changeclip_backbone}
@@ -386,19 +386,24 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 83.99 & 75.63 & 95.78 & 71.41 & 90.
     \toprule
     Dataset       & Backbone     & OA    & mF1   & mIoU  & IoU   & F1    & Rec   & Prec  \\
     \midrule
-    WHUCD         & RN50         & 99.52 & 97.29 & 94.83 & 90.15 & 94.82 & 94.02 & 95.63 \\
+    \multirow{2}{*}{WHUCD}
+                  & RN50         & 99.52 & 97.29 & 94.83 & 90.15 & 94.82 & 94.02 & 95.63 \\
                   & ViT-B/16     & 99.52 & 97.27 & 94.79 & 90.08 & 94.78 & 93.58 & 96.02 \\
     \midrule
-    CDD           & RN50         & 99.48 & 98.80 & 97.64 & 95.87 & 97.89 & 97.77 & 98.02 \\
+    \multirow{2}{*}{CDD}
+                  & RN50         & 99.48 & 98.80 & 97.64 & 95.87 & 97.89 & 97.77 & 98.02 \\
                   & ViT-B/16     & 99.47 & 98.77 & 97.59 & 95.78 & 97.85 & 97.81 & 97.88 \\
     \midrule
-    SYSU-CD       & RN50         & 92.08 & 88.79 & 80.38 & 70.53 & 82.72 & 80.41 & 85.16 \\
+    \multirow{2}{*}{SYSU-CD}
+                  & RN50         & 92.08 & 88.79 & 80.38 & 70.53 & 82.72 & 80.41 & 85.16 \\
                   & ViT-B/16     & 92.46 & 89.23 & 81.06 & 71.41 & 83.32 & 79.80 & 87.16 \\
     \midrule
-    LEVIR-CD      & RN50         & 99.20 & 95.79 & 92.18 & 85.20 & 92.01 & 90.67 & 93.40 \\
+    \multirow{2}{*}{LEVIR-CD}
+                  & RN50         & 99.20 & 95.79 & 92.18 & 85.20 & 92.01 & 90.67 & 93.40 \\
                   & ViT-B/16     & 99.14 & 95.42 & 91.54 & 83.99 & 91.30 & 89.04 & 93.68 \\
     \midrule
-    LEVIR-CD+     & RN50         & 98.79 & 92.08 & 86.18 & 73.61 & 84.80 & 82.69 & 87.02 \\
+    \multirow{2}{*}{LEVIR-CD+}
+                  & RN50         & 98.79 & 92.08 & 86.18 & 73.61 & 84.80 & 82.69 & 87.02 \\
                   & ViT-B/16     & 98.90 & 92.77 & 87.24 & 75.63 & 86.12 & 83.90 & 88.46 \\
     \bottomrule
   \end{tabular*}
@@ -408,21 +413,21 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 83.99 & 75.63 & 95.78 & 71.41 & 90.
 
 \subsubsection{ChangeCLIP在不同的骨架网络的结果}
 
-根据本章的实验,对CLIP模型中的两个骨干网络,RN50(ResNet50)和ViT(ViT-B/16),进行了详细比较。根据表表~\ref{tab:changeclip_backbone}中的结果,在使用的5个代表性数据集上,ViT骨干网络在SYSU-CD和LEVIR-CD+数据集上的表现远优于RN50骨干网络,在CDD和WHUCD数据集上接近RN50,在LEVIR-CD数据集上的表现则较差。可以看出,ViT和RN50在不同数据集上的表现有所不同,但总体上它们都表现出了较高的准确性。ViT的整体表现略优于RN50。这可以归因于几个因素。首先,ViT相比RN50模型具有更广泛的全局感受野。这意味着ViT能够更好地捕捉遥感影像中目标个体之间的全局关联信息。其次,在RN50骨干网络中,使用了一个注意力池化模块来生成高层语义特征,这些特征被用来替代图像序列特征。而在ViT框架中,直接将高层特征作为图像序列特征。与RN50骨干网络相比,ViT骨干网络生成的图像序列特征与文本序列特征更加一致,这使得ViT骨干网络在多模态任务中表现得更好。
+根据本节的实验,对CLIP模型中的两个骨干网络,RN50(ResNet50)和ViT(ViT-B/16),进行了详细比较。根据表表~\ref{tab:changeclip_backbone}中的结果,在使用的5个代表性数据集上,ViT骨干网络在SYSU-CD和LEVIR-CD+数据集上的表现远优于RN50骨干网络,在CDD和WHUCD数据集上接近RN50,在LEVIR-CD数据集上的表现则较差。可以看出,ViT和RN50在不同数据集上的表现有所不同,但总体上它们都表现出了较高的准确性。ViT的整体表现略优于RN50。这可以归因于几个因素。首先,ViT相比RN50模型具有更广泛的全局感受野。这意味着ViT能够更好地捕捉遥感影像中目标个体之间的全局关联信息。其次,在RN50骨干网络中,使用了一个注意力池化模块来生成高层语义特征,这些特征被用来替代图像序列特征。而在ViT框架中,直接将高层特征作为图像序列特征。与RN50骨干网络相比,ViT骨干网络生成的图像序列特征与文本序列特征更加一致,这使得ViT骨干网络在多模态任务中表现得更好。
 
 \subsubsection{ChangeCLIP中差异特征图热图可视化分析}
 
-可视化热图为ChangeCLIP在遥感影像变化检测(RSCD)任务中感知变化特征的能力提供了宝贵的见解。观察可得,使用ChangeCLIP能够生成具有更强判别性的特征图,这表明其对遥感影像中变化区域的敏感度增强。与传统的特征图热图通常突出前景中的显著区域不同,变化检测的主要目标是识别变化区域。在图~\ref{fig:changeclip_hotmap}中,展示了ChangeCLIP在CDD数据集上的特征图可视化。具体而言,``DFC''表示通过DFC模块处理后的融合特征图的编码部分特征,而``Concat''表示双时相影像在图像特征提取后得到的融合特征图。从图中可以看出,与DFC模块之前的特征图相比,经过DFC模块处理后的特征图在变化特征上展现了更好的效果。特征热图展示了ChangeCLIP在双时相遥感影像中对变化区域的强烈感知能力,突显了本章提出的方法在变化检测任务中的优越性。
+可视化热图为ChangeCLIP在遥感影像变化检测(RSCD)任务中感知变化特征的能力提供了宝贵的见解。观察可得,使用ChangeCLIP能够生成具有更强判别性的特征图,这表明其对遥感影像中变化区域的敏感度增强。与传统的特征图热图通常突出前景中的显著区域不同,变化检测的主要目标是识别变化区域。在图~\ref{fig:changeclip_hotmap}中,展示了ChangeCLIP在CDD数据集上的特征图可视化。具体而言,``DFC''表示通过DFC模块处理后的融合特征图的编码部分特征,而``Concat''表示双时相影像在图像特征提取后得到的融合特征图。从图中可以看出,与DFC模块之前的特征图相比,经过DFC模块处理后的特征图在变化特征上展现了更好的效果。特征热图展示了ChangeCLIP在双时相遥感影像中对变化区域的强烈感知能力,突显了本节提出的方法在变化检测任务中的优越性。
 
-\subsection{讨论}
+\subsection{ChangeCLIP模型的可行性分析与未来工作展望}
 
 \subsubsection{基于多模态视觉-语言表示学习的变化检测}
 
-在本章中,结合了CLIP的无监督推理能力,为遥感影像构建了基本的文本提示。然而,类别语义信息通常在遥感影像语义分割中更为重要,因为在变化检测中,目标是感知变化区域,而不是区分特定的类别。因此,在变化检测任务中指定文本提示需要更好地契合变化检测的任务需求。因此,背景类别很难为变化检测任务制定合适的文本提示。根据提出的消融实验,显然,结合文本的多模态变化检测在多个数据集上始终能达到卓越的算法精度。可以明确看出,多模态信息的融合确实为推动遥感影像变化检测(RSCD)在不同数据集上的进展做出了贡献。同时,在提出的方法的解码阶段,引入了一种新机制,进一步增强了变化检测的性能。通过引入低秩双线性注意力模块,促进了来自解码阶段的图像特征与编码阶段的视觉-语言特征的融合。这种集成使得模型能够有效捕捉视觉和文本模态之间的互补信息,从而提升特征表示和增强RSCD性能。低秩双线性注意力机制促进了解码特征与编码的视觉-语言特征的对齐和交互,增强了模型捕捉遥感影像语义上下文的能力。这种创新的融合方法加强了模型对RSCD任务的理解,并提高了其在遥感影像变化识别中的判别能力。然而,针对解码阶段的视觉-语言结合,可以探索一种更合适的方式,将编码阶段的视觉-语言特征与解码阶段的视觉特征进行结合。
+在本节中,结合了CLIP的无监督推理能力,为遥感影像构建了基本的文本提示。然而,类别语义信息通常在遥感影像语义分割中更为重要,因为在变化检测中,目标是感知变化区域,而不是区分特定的类别。因此,在变化检测任务中指定文本提示需要更好地契合变化检测的任务需求。因此,背景类别很难为变化检测任务制定合适的文本提示。根据提出的消融实验,显然,结合文本的多模态变化检测在多个数据集上始终能达到卓越的算法精度。可以明确看出,多模态信息的融合确实为推动遥感影像变化检测(RSCD)在不同数据集上的进展做出了贡献。同时,在提出的方法的解码阶段,引入了一种新机制,进一步增强了变化检测的性能。通过引入低秩双线性注意力模块,促进了来自解码阶段的图像特征与编码阶段的视觉-语言特征的融合。这种集成使得模型能够有效捕捉视觉和文本模态之间的互补信息,从而提升特征表示和增强RSCD性能。低秩双线性注意力机制促进了解码特征与编码的视觉-语言特征的对齐和交互,增强了模型捕捉遥感影像语义上下文的能力。这种创新的融合方法加强了模型对RSCD任务的理解,并提高了其在遥感影像变化识别中的判别能力。然而,针对解码阶段的视觉-语言结合,可以探索一种更合适的方式,将编码阶段的视觉-语言特征与解码阶段的视觉特征进行结合。
 
 \subsubsection{image-score map的应用}
 
-在本章提出的ChangeCLIP中,基于文本提示和图像视觉信息计算了图像-文本得分图。对于图像-文本得分图的应用,将得分图与视觉编码阶段的高层语义特征图进行拼接,并直接利用文本信息来补充语义信息。依据在语义分割任务中广泛应用的多层次特征融合理论,得分图可以与高层语义特征图及浅层特征图进行结合,以在浅层网络阶段补充文本的语义信息。然而,在实际的网络设计中,生成多层次的得分图需要大量的计算。因此,在结合得分图与视觉编码阶段的过程中,仍有很大的改进空间,可以构思出一个合适的模块来更好地将得分图与视觉编码阶段结合。
+在本节提出的ChangeCLIP中,基于文本提示和图像视觉信息计算了图像-文本得分图。对于图像-文本得分图的应用,将得分图与视觉编码阶段的高层语义特征图进行拼接,并直接利用文本信息来补充语义信息。依据在语义分割任务中广泛应用的多层次特征融合理论,得分图可以与高层语义特征图及浅层特征图进行结合,以在浅层网络阶段补充文本的语义信息。然而,在实际的网络设计中,生成多层次的得分图需要大量的计算。因此,在结合得分图与视觉编码阶段的过程中,仍有很大的改进空间,可以构思出一个合适的模块来更好地将得分图与视觉编码阶段结合。
 
 \subsubsection{差异特征计算}
 
@@ -432,12 +437,12 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 83.99 & 75.63 & 95.78 & 71.41 & 90.
 
 \subsection{小结}
 
-在本章中,提出了一种名为ChangeCLIP的多模态框架,用于通过利用多模态视觉-语言信息在遥感影像中进行变化检测。通过整合遥感影像的文本语义信息,增强了视觉模型感知遥感变化的能力。提出的差异特征补偿模块整合了常用的差异特征计算方法,优化了变化检测中差异特征融合的方式。此外,还提出了一种名为视觉-语言驱动解码器的多模态变化检测解码方法,旨在补充解码阶段的语义信息。在解码阶段融合文本和视觉特征,使得ChangeCLIP能够生成更准确和全面的表示,提升变化检测任务的性能。为了评估ChangeCLIP的有效性,在5个基准变化检测数据集(LEVIR-CD、LEVIR-CD+、WHUCD、CDD和SYSU-CD)上进行了全面的实验。实验结果表明,提出的ChangeCLIP模型显著优于现有的最先进方法,在所有5个数据集上达到了前所未有的性能。此外,本章还对ChangeCLIP进行了系统分析,揭示了其潜在的机制,并为未来可能的改进提供了见解。展望未来,多模态范式将在遥感图像处理领域获得越来越多的关注。通过开发更有效的变化检测语言提示,ChangeCLIP的性能有着巨大的提升空间,同时,ChangeCLIP也将成为多模态遥感影像变化检测(RSCD)的基准。这些合适的提示可以更好地引导模型学习与变化相关的特征,进而进一步提高变化检测性能。
+在本节中,提出了一种名为ChangeCLIP的多模态框架,用于通过利用多模态视觉-语言信息在遥感影像中进行变化检测。通过整合遥感影像的文本语义信息,增强了视觉模型感知遥感变化的能力。提出的差异特征补偿模块整合了常用的差异特征计算方法,优化了变化检测中差异特征融合的方式。此外,还提出了一种名为视觉-语言驱动解码器的多模态变化检测解码方法,旨在补充解码阶段的语义信息。在解码阶段融合文本和视觉特征,使得ChangeCLIP能够生成更准确和全面的表示,提升变化检测任务的性能。为了评估ChangeCLIP的有效性,在5个基准变化检测数据集(LEVIR-CD、LEVIR-CD+、WHUCD、CDD和SYSU-CD)上进行了全面的实验。实验结果表明,提出的ChangeCLIP模型显著优于现有的最先进方法,在所有5个数据集上达到了前所未有的性能。此外,本节还对ChangeCLIP进行了系统分析,揭示了其潜在的机制,并为未来可能的改进提供了见解。展望未来,多模态范式将在遥感图像处理领域获得越来越多的关注。通过开发更有效的变化检测语言提示,ChangeCLIP的性能有着巨大的提升空间,同时,ChangeCLIP也将成为多模态遥感影像变化检测(RSCD)的基准。这些合适的提示可以更好地引导模型学习与变化相关的特征,进而进一步提高变化检测性能。
 
 
 \section{基于视觉基础模型微调的变化检测方法}
 
-\subsection{引言}
+\subsection{视觉基础模型与变化检测任务概述}
 
 遥感影像变化检测（Remote Sensing Change Detection, RSCD）是遥感领域的重要研究方向，其目标是通过对比多时相遥感影像来识别地表的变化区域。在实际应用中，RSCD 面临多重挑战。首先，遥感数据具有多时相性、多源多样性和多尺度变化等特征。其次，现有高分辨率遥感数据集往往规模有限，标注成本高昂，且缺乏充足的大规模预训练样本。此外，由于异构传感器和成像条件变化所导致的域偏移问题，严重阻碍了现有模型的跨域泛化能力。这些问题在复杂场景下会导致变化检测模型性能的下降。
 
@@ -452,12 +457,12 @@ ChangeCLIP      & I\&T  & FPN+DFC   & VLDD & 83.99 & 75.63 & 95.78 & 71.41 & 90.
   \label{fig:peftcd_framework}
 \end{figure}
 
-基于上述动机，本章提出了一种基于 VFM 微调的全新变化检测框架——\textbf{PeftCD（Parameter-Efficient Fine-Tuning Change Detection）}。我们选取了两类具有代表性的 VFMs 作为骨干：具备强大分割先验的 \textbf{Segment Anything Model v2 (SAM2)}，以及自监督表征学习模型 \textbf{DINOv3}。在此基础上，我们引入了两种典型的 PEFT 方法：\textbf{LoRA}~\cite{LORA} 与 \textbf{Adapter}~\cite{adapter}，以实现对遥感场景的高效适配。值得注意的是，除适配外，我们进一步观察到，ViT 类骨干（如 DINOv3）在经过 patch embedding 之后会以固定分辨率进行特征表示，缺乏类似 FPN 的多尺度金字塔结构，这在直接应用于像素级 RSCD 时容易导致边界模糊与伪变化敏感性。为释放其潜力，我们设计了 \textbf{多层融合与上下文增强（Multi-layer Fusion and Context Enhancement, MFCE）解码器}，其结构如图~\ref{fig:peftcd_dino3cd} 所示。MFCE 在同尺度下实现跨 Transformer 层的深度注意力融合，并通过 ASPP 风格的上下文模块增强感受野。MFCE 解码器在不引入复杂解码头的前提下，有效补充了 DINOv3 的语义表征能力。而在另一实例中，SAM2 的实现（SAM2CD；见图~\ref{fig:peftcd_sam2cd}）则结合了 FPN 与轻量级 ResBlock 解码器，更好地利用其分割先验。
+基于上述动机，本节提出了一种基于 VFM 微调的全新变化检测框架——\textbf{PeftCD（Parameter-Efficient Fine-Tuning Change Detection）}。如图~\ref{fig:peftcd_framework}所示，我们选取了两类具有代表性的 VFMs 作为骨干：具备强大分割先验的 \textbf{Segment Anything Model v2 (SAM2)}，以及自监督表征学习模型 \textbf{DINOv3}。在此基础上，我们引入了两种典型的 PEFT 方法：\textbf{LoRA}~\cite{LORA} 与 \textbf{Adapter}~\cite{adapter}，以实现对遥感场景的高效适配。值得注意的是，除适配外，我们进一步观察到，ViT 类骨干（如 DINOv3）在经过 patch embedding 之后会以固定分辨率进行特征表示，缺乏类似 FPN 的多尺度金字塔结构，这在直接应用于像素级 RSCD 时容易导致边界模糊与伪变化敏感性。为释放其潜力，我们设计了 \textbf{多层融合与上下文增强（Multi-layer Fusion and Context Enhancement, MFCE）解码器}，其结构如图~\ref{fig:peftcd_dino3cd} 所示。MFCE 在同尺度下实现跨 Transformer 层的深度注意力融合，并通过 ASPP 风格的上下文模块增强感受野。MFCE 解码器在不引入复杂解码头的前提下，有效补充了 DINOv3 的语义表征能力。而在另一实例中，SAM2 的实现（SAM2CD；见图~\ref{fig:peftcd_sam2cd}）则结合了 FPN 与轻量级 ResBlock 解码器，更好地利用其分割先验。
 
 \subsection{视觉基础模型简介}
 
 \subsubsection{分割基础模型：SAM2}
-Segment Anything Model 2 (SAM2)~\cite{ravi2024sam} 是原始 SAM~\cite{Kirillov2023SegmentA} 的一次重大升级，旨在提供更高质量且更高效的交互式与自动化图像分割。SAM2 在包含超过 11 亿分割掩膜的 SA-1B 数据集上进行训练，从而学习到丰富的目标结构、边界以及层次关系。与传统的分割模型不同，SAM2 的核心在于其\emph{可提示分割（promptable segmentation）}能力，即模型能够根据点、边界框、掩膜或文本等多种提示，对图像中的任意目标进行分割。即使在缺少提示的情况下，模型也能自动生成场景中所有目标的分割结果。
+Segment Anything Model 2 (SAM2)~\cite{ravi2024sam} 是原始 SAM~\cite{Kirillov2023SegmentA} 的一次重大升级，旨在提供更高质量且更高效的交互式与自动化图像分割。SAM2 在包含超过 11 亿分割掩膜的 SA-1B 数据集上进行训练，从而学习到丰富的目标结构、边界以及层次关系。与传统的分割模型不同，SAM2 的核心在于其可提示分割（promptable segmentation）能力，即模型能够根据点、边界框、掩膜或文本等多种提示，对图像中的任意目标进行分割。即使在缺少提示的情况下，模型也能自动生成场景中所有目标的分割结果。
 
 在变化检测任务中，分割的本质是对目标边界进行精确刻画，以识别新增、消失或形态发生变化的对象。得益于大规模训练，SAM2 在边界捕获方面展现出卓越的能力，这与变化检测的核心需求高度契合。尤其是在建筑物、道路或水体的细粒度变化场景中，SAM2 可作为强有力的先验知识来源，提供高质量的目标级空间线索，从而提升整体的分割精度。
 
@@ -469,7 +474,7 @@ DINOv3~\cite{simeoni2025dinov3} 代表了自监督视觉 Transformer 的最新�
 
 \subsection{参数高效微调方法}
 
-为了有效地将基础模型适配于遥感变化检测任务，本章引入了两种具有代表性的参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法：低秩适配（LoRA）~\cite{LORA} 和 Adapter~\cite{adapter}。
+为了有效地将基础模型适配于遥感变化检测任务，本节引入了两种具有代表性的参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法：低秩适配（LoRA）~\cite{LORA} 和 Adapter~\cite{adapter}。
 
 \subsubsection{低秩适配（LoRA）}
 
@@ -487,7 +492,7 @@ LoRA~\cite{LORA} 假设下游任务适配所需的权重更新可以通过低秩
 \vect{h}=\widehat{\mat{W}}\,\vect{x}
 =\mat{W}_0\vect{x}+\frac{\alpha}{r}\,\mat{B}\mat{A}\,\vect{x}
 \end{equation}
-在训练过程中，仅有 $\mat{A}$ 和 $\mat{B}$（以及可选的缩放超参数 $\alpha$）会被更新，而 $\mat{W}_0$ 保持冻结不变。在本章中，LoRA 模块被注入到 Transformer 的多头自注意力（Multi-Head Self-Attention, MHSA）中的特定线性投影部分。其超参数设置为 $r{=}8$，$\alpha{=}32$。LoRA 的优势在于其简洁高效，仅引入少量额外参数，却能够有效引导模型朝向任务相关的表征。
+在训练过程中，仅有 $\mat{A}$ 和 $\mat{B}$（以及可选的缩放超参数 $\alpha$）会被更新，而 $\mat{W}_0$ 保持冻结不变。在本节中，LoRA 模块被注入到 Transformer 的多头自注意力（Multi-Head Self-Attention, MHSA）中的特定线性投影部分。其超参数设置为 $r{=}8$，$\alpha{=}32$。LoRA 的优势在于其简洁高效，仅引入少量额外参数，却能够有效引导模型朝向任务相关的表征。
 
 \subsubsection{Adapter}
 
@@ -518,7 +523,7 @@ DINOv3 & Adapter & Pre-block     & dim=32 & -- \\
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_sam2cd.png}
-  \caption{基于 SAM2 的 PeftCD 模型架构示意图。双时相影像输入共享的、插入了PEFT模块的SAM2编码器。提取的特征金字塔经过特征交换后，送入共享的解码器，最终生成变化图。}
+  \caption{基于 SAM2 的 PeftCD 模型架构示意图(SAM2CD)。双时相影像输入共享的、插入了PEFT模块的SAM2编码器。提取的特征金字塔经过特征交换后，送入共享的解码器，最终生成变化图。}
   \label{fig:peftcd_sam2cd}
 \end{figure}
 
@@ -528,7 +533,7 @@ DINOv3 & Adapter & Pre-block     & dim=32 & -- \\
 \subsubsection{整体思路}
 
 所提出的 PeftCD 框架如图~\ref{fig:peftcd_framework} 所示，基础的变化检测范式采用前文提及的SEED架构。对于一对双时相遥感影像 $X_t$ 和 $X_{t'}$，首先通过共享权重的骨干网络（可选 SAM2 或 DINOv3）提取特征表示。在实验中，我们采用 \texttt{sam2\_hiera\_large} 与 \texttt{dinov3\_vitl16} 作为骨干网络。  
-\textbf{参数高效适配}的具体配置如表~\ref{tab:peftcd_cfg} 所示：(i) \emph{LoRA} 被注入至 \emph{每一个} Transformer 块的多头自注意力（MHSA）\texttt{qkv} 投影中，设置秩 $r{=}8$、缩放系数 $\alpha{=}32$、dropout 为 $0.1$；(ii) \emph{Adapter} 则对 \emph{每一个}编码器块进行封装，采用前置残差 MLP 结构（两层瓶颈结构，激活函数为 GELU，瓶颈维度为 $32$）。在两种策略下，\emph{所有骨干网络的参数保持冻结，仅有 PEFT 模块可训练}。在编码之后，我们在双时相特征流之间引入特征层交换操作，以促进模型学习与变化相关的表征。交换后的特征再通过一个刻意设计的轻量化解码头进行解码，从而凸显 VFM 骨干网络的表征能力。在基于 SAM2 的架构中，我们采用 FPN 融合特征金字塔，并结合基于 ResBlock 的渐进式上采样解码器生成预测图。而在基于 DINOv3 的架构中，由于其输出为\emph{单尺度}的高维语义特征，我们设计了解码器，先进行同尺度的多层特征融合与上下文增强（ASPP），再逐步上采样至原始分辨率。
+\textbf{参数高效适配}的具体配置如表~\ref{tab:peftcd_cfg} 所示：(i) LoRA被注入至每一个Transformer 块的多头自注意力（MHSA）\texttt{qkv} 投影中，设置秩 $r{=}8$、缩放系数 $\alpha{=}32$、dropout 为 $0.1$；(ii) Adapter则对 每一个编码器块进行封装，采用前置残差 MLP 结构（两层瓶颈结构，激活函数为 GELU，瓶颈维度为 $32$）。在两种策略下，所有骨干网络的参数保持冻结，仅有 PEFT 模块可训练。在编码之后，我们在双时相特征流之间引入特征层交换操作，以促进模型学习与变化相关的表征。交换后的特征再通过一个刻意设计的轻量化解码头进行解码，从而凸显 VFM 骨干网络的表征能力。在基于 SAM2 的架构中，我们采用 FPN 融合特征金字塔，并结合基于 ResBlock 的渐进式上采样解码器生成预测图。而在基于 DINOv3 的架构中，由于其输出为单尺度的高维语义特征，我们设计了解码器，先进行同尺度的多层特征融合与上下文增强（ASPP），再逐步上采样至原始分辨率。
 
 \subsubsection{双时相特征处理与变化检测范式}
 在特征交互和解码阶段，PeftCD框架采纳了本文在第六章中提出的SEED（Siamese-Encoder-Exchange-Decoder）范式。我们认为，这种摒弃了显式差异计算的架构，能够最大程度地保留基础模型提取的原始特征信息，充分发挥其强大的表征能力。
@@ -539,10 +544,10 @@ DINOv3 & Adapter & Pre-block     & dim=32 & -- \\
 \end{itemize}
 在该范式下，模型被训练来识别由特征交换所引入的“时空特征不一致性”，这种不一致性在变化区域表现得尤为剧烈，从而使模型能够隐式地学习到变化的概念。
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_dino3cd.png} % 请确保图片路径正确
-  \caption{基于DINOv3的PeftCD模型架构（DINOv3CD）。该模型采用与SAM2CD类似的SEED范式，但其核心编码器替换为DINOv3，旨在利用其强大的自监督表征来提升对伪变化的鲁棒性。}
+  \caption{基于DINOv3的PeftCD模型架构（DINO3CD）。该模型采用与SAM2CD类似的SEED范式，但其核心编码器替换为DINOv3，旨在利用其强大的自监督表征来提升对伪变化的鲁棒性。}
   \label{fig:peftcd_dino3cd}
 \end{figure}
 
@@ -556,7 +561,7 @@ DINOv3 & Adapter & Pre-block     & dim=32 & -- \\
 编码器在每个时相生成一组多尺度特征金字塔。该设计既能保留 SAM2 的通用分割能力，又能高效学习针对双时相遥感影像的判别性特征，从而为后续的变化识别奠定基础。最终，编码器输出两组多尺度特征金字塔，分别以层次化的方式表征对应时相图像，从低层纹理到高层语义。  
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 与经典变化检测模型在 SYSU-CD 数据集上的定量对比结果}
 \label{tab:peftcd_sysu}
@@ -592,7 +597,7 @@ PeftCD(DINOv3)  & 93.25 & 73.81 & 84.93 & 80.71 & 89.61 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_sysu.png}
   \caption{PeftCD 模型与对比模型在 SYSU-CD 数据集上的可视化对比结果}
@@ -600,7 +605,7 @@ PeftCD(DINOv3)  & 93.25 & 73.81 & 84.93 & 80.71 & 89.61 \\
 \end{figure}
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 与经典变化检测模型在 WHUCD 数据集上的定量对比结果}
 \label{tab:peftcd_whucd}
@@ -625,7 +630,7 @@ PeftCD & 99.62 & 92.05 & 95.86 & 94.95 & 96.79 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_whucd.png}
   \caption{PeftCD 模型与对比模型在 WHUCD 数据集上的可视化对比结果}
@@ -634,7 +639,7 @@ PeftCD & 99.62 & 92.05 & 95.86 & 94.95 & 96.79 \\
 
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 与经典变化检测模型在 S2Looking 数据集上的定量对比结果}
 \label{tab:peftcd_s2looking}
@@ -661,7 +666,7 @@ PeftCD & 99.30 & 52.25 & 68.64 & 63.53 & 74.64 \\
 \end{table}
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_s2looking.png}
   \caption{PeftCD 模型与对比模型在 S2Looking 数据集上的可视化对比结果}
@@ -709,7 +714,7 @@ PeftCD & 93.83 & 64.07 & 78.10 & 74.19 & 82.44 \\
 \end{table}
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_msrscd.png}
   \caption{PeftCD 与对比模型在 MSRSCD 数据集上的可视化对比结果.}
@@ -717,7 +722,7 @@ PeftCD & 93.83 & 64.07 & 78.10 & 74.19 & 82.44 \\
 \end{figure}
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 与经典变化检测模型在 MLCD 数据集上的定量对比结果}
 \label{tab:peftcd_mlcd}
@@ -737,7 +742,7 @@ PeftCD & 92.94 & 76.89 & 86.93 & 85.02 & 88.94 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_mlcd.png}
   \caption{PeftCD 与对比模型在 MLCD 数据集上的可视化对比结果.}
@@ -747,7 +752,7 @@ PeftCD & 92.94 & 76.89 & 86.93 & 85.02 & 88.94 \\
 
 \subsubsection{基于 DINOv3 的 PeftCD架构}
 
-我们还在 DINOv3 上实例化了 PeftCD（见图~\ref{fig:peftcd_dino3cd}）。与 SAM2 不同，DINOv3 并非面向分割设计，其在 patch embedding 之后以固定空间分辨率进行运算，在各层中均输出\emph{同尺度}特征。根据表~\ref{tab:peftcd_cfg} 的设置，每个 Transformer 块均通过 LoRA 注入至 MHSA 的 \texttt{qkv} 投影（$r{=}8$, $\alpha{=}32$, dropout $0.1$），或通过前置残差 Adapter MLP（瓶颈维度 $32$，激活函数为 GELU）进行适配。在此过程中，骨干网络权重保持冻结，仅有 PEFT 模块参数参与训练。在使用共享权重对双时相图像进行编码后，我们执行特征层交换，以增强双时相之间的交互。解码器随后依次执行：(i) 同尺度多层特征的深度注意力融合；(ii) 基于 ASPP 的上下文增强；以及 (iii) 渐进式上采样，最终生成变化检测结果图。该设计弥补了 ViT 类骨干缺乏空间金字塔结构的不足，同时保留了 DINOv3 在语义表征和跨域泛化方面的优势。  
+我们还在 DINOv3 上实例化了 PeftCD（见图~\ref{fig:peftcd_dino3cd}）。与 SAM2 不同，DINOv3 并非面向分割设计，其在 patch embedding 之后以固定空间分辨率进行运算，在各层中均输出同尺度特征。根据表~\ref{tab:peftcd_cfg} 的设置，每个 Transformer 块均通过 LoRA 注入至 MHSA 的 \texttt{qkv} 投影（$r{=}8$, $\alpha{=}32$, dropout $0.1$），或通过前置残差 Adapter MLP（瓶颈维度 $32$，激活函数为 GELU）进行适配。在此过程中，骨干网络权重保持冻结，仅有 PEFT 模块参数参与训练。在使用共享权重对双时相图像进行编码后，我们执行特征层交换，以增强双时相之间的交互。解码器随后依次执行：(i) 同尺度多层特征的深度注意力融合；(ii) 基于 ASPP 的上下文增强；以及 (iii) 渐进式上采样，最终生成变化检测结果图。该设计弥补了 ViT 类骨干缺乏空间金字塔结构的不足，同时保留了 DINOv3 在语义表征和跨域泛化方面的优势。  
 
 
 
@@ -762,7 +767,7 @@ PeftCD & 92.94 & 76.89 & 86.93 & 85.02 & 88.94 \\
 \subsubsection{同尺度多层特征的深度注意力融合}
 尽管 ViT 的各层输出特征图分辨率相同，但它们在语义层面构成了“深度金字塔”。浅层特征更关注局部纹理和边缘，而深层特征则编码了更抽象的全局语义。为了充分且智能地利用这些信息，解码器的首要任务是对其进行高效融合。
 
-我们为此设计了一个深度注意力融合模块，用以处理来自编码器不同层级的多个同尺度特征图。在本章中，参考ResNet与Swin Transformer等模型的架构设计方法，选用5,11,17,23层的输出作为同尺度特征图融合输入。对于输入的 4 个特征图 $\{F_1, F_2, F_3, F_4\}$，其中 $F_i \in \mathbb{R}^{B \times C_i \times H \times W}$，该模块首先将它们投影到统一的中间维度 $C_{mid}$，得到 $\{X_1, X_2, X_3, X_4\}$。随后，为每个空间位置 $(h, w)$ 的每个特征层 $X_i$ 学习一个注意力权重 $A_i(h, w)$。该权重由一个 $1 \times 1$ 卷积网络生成，并通过沿深度（层）维度的 Softmax 函数进行归一化：
+我们为此设计了一个深度注意力融合模块，用以处理来自编码器不同层级的多个同尺度特征图。在本节中，参考ResNet与Swin Transformer等模型的架构设计方法，选用5,11,17,23层的输出作为同尺度特征图融合输入。对于输入的 4 个特征图 $\{F_1, F_2, F_3, F_4\}$，其中 $F_i \in \mathbb{R}^{B \times C_i \times H \times W}$，该模块首先将它们投影到统一的中间维度 $C_{mid}$，得到 $\{X_1, X_2, X_3, X_4\}$。随后，为每个空间位置 $(h, w)$ 的每个特征层 $X_i$ 学习一个注意力权重 $A_i(h, w)$。该权重由一个 $1 \times 1$ 卷积网络生成，并通过沿深度（层）维度的 Softmax 函数进行归一化：
 \begin{equation}
     A_i(h, w) = \frac{\exp(S_i(h, w))}{\sum_{j=1}^{N} \exp(S_j(h, w))}
 \end{equation}
@@ -777,7 +782,7 @@ PeftCD & 92.94 & 76.89 & 86.93 & 85.02 & 88.94 \\
 
 最后，经过上下文增强的特征图（分辨率仍为 $1/16$）将进入一个渐进式上采样路径。该路径通过三次“双线性插值上采样 + 深度可分离卷积”的组合，将分辨率从 $1/16$ 逐步提升至 $1/8$、$1/4$，并最终恢复到原始尺寸。其中的深度可分离卷积模块用于在上采样后平滑和优化特征，以此获取更丰富的细节信息。最终，由预测头生成像素级的变化检测结果。
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 与经典变化检测模型在 CDD 数据集上的定量对比结果}
 \label{tab:peftcd_cdd}
@@ -807,7 +812,7 @@ PeftCD & 99.63 & 97.01 & 98.48 & 98.30 & 98.67 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_cdd.png}
   \caption{PeftCD 与对比模型在 CDD 数据集上的可视化对比结果.}
@@ -823,7 +828,7 @@ PeftCD & 99.63 & 97.01 & 98.48 & 98.30 & 98.67 \\
 
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{PeftCD 模型与经典变化检测模型在 LEVIR-CD 数据集上的定量对比结果}
 \label{tab:peftcd_levir}
@@ -859,7 +864,7 @@ PeftCD  & 99.22 & 85.62 & 92.25 & 91.44 & 93.08 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/基于AI基础模型微调的变化检测模型研究/PeftCD/peftcd_levir.png}
   \caption{PeftCD 与对比模型在 LEVIR-CD 数据集上的可视化对比结果.}
@@ -874,19 +879,19 @@ PeftCD  & 99.22 & 85.62 & 92.25 & 91.44 & 93.08 \\
 
 \subsubsection{消融实验}
 
-如表~\ref{tab:peftcd_ablation} 所示，\emph{PEFT} 在两类骨干网络（SAM2 与 DINOv3）上均较 \emph{Frozen Encoder} 基线取得了稳定提升，这表明即使在冻结大部分参数的情况下，仅注入少量可训练模块也能够有效地引导模型适配“变化”这一概念。总体而言，\textbf{DINOv3+LoRA} 在大多数数据集上取得了最佳或并列最佳的 IoU：在 SYSU-CD、WHUCD、S2Looking、MSRSCD 上分别达到 73.81、92.05、52.25、64.07，相较于冻结基线有显著提升。在 \textbf{MLCD} 上，\textbf{DINOv3+Adapter} 略优于 LoRA（76.89 vs.\ 76.54），说明 \textbf{Adapter} 在地貌变化复杂、尺度分布更丰富的数据集上展现出更好的鲁棒性。相比之下，\textbf{SAM2} 骨干在 \textbf{LEVIR-CD} 和 \textbf{CDD} 上展现出更明显的优势：\textbf{SAM2+LoRA} 在 LEVIR-CD 上达到 85.62，而 \textbf{SAM2+Adapter} 在 CDD 上取得了 \textbf{97.01} 的最佳 IoU，反映了大规模分割先验在建筑物边界刻画和季节性外观变化抑制方面的积极作用。综上所述，\textbf{DINOv3+LoRA} 能够提供跨场景的一致性优势，这主要归因于 DINOv3 在更大规模和更丰富语料上的预训练所带来的更强泛化能力；而 \textbf{SAM2} 则在特定场景下展现出更优的边界识别能力。
+如表~\ref{tab:peftcd_ablation} 所示，PEFT在两类骨干网络（SAM2 与 DINOv3）上均较 Frozen Encoder 基线取得了稳定提升，这表明即使在冻结大部分参数的情况下，仅注入少量可训练模块也能够有效地引导模型适配“变化”这一概念。总体而言，\textbf{DINOv3+LoRA} 在大多数数据集上取得了最佳或并列最佳的 IoU：在 SYSU-CD、WHUCD、S2Looking、MSRSCD 上分别达到 73.81、92.05、52.25、64.07，相较于冻结基线有显著提升。在 \textbf{MLCD} 上，\textbf{DINOv3+Adapter} 略优于 LoRA（76.89 vs.\ 76.54），说明 \textbf{Adapter} 在地貌变化复杂、尺度分布更丰富的数据集上展现出更好的鲁棒性。相比之下，\textbf{SAM2} 骨干在 \textbf{LEVIR-CD} 和 \textbf{CDD} 上展现出更明显的优势：\textbf{SAM2+LoRA} 在 LEVIR-CD 上达到 85.62，而 \textbf{SAM2+Adapter} 在 CDD 上取得了 \textbf{97.01} 的最佳 IoU，反映了大规模分割先验在建筑物边界刻画和季节性外观变化抑制方面的积极作用。综上所述，\textbf{DINOv3+LoRA} 能够提供跨场景的一致性优势，这主要归因于 DINOv3 在更大规模和更丰富语料上的预训练所带来的更强泛化能力；而 \textbf{SAM2} 则在特定场景下展现出更优的边界识别能力。
 
-此外，为进一步验证 DINO3CD 架构中多层融合与上下文增强解码器设计的有效性，我们进行了第二组消融实验，专门评估了所提出的多层融合与上下文增强（MFCE）解码器的贡献。如表~\label{tab:peftcd_dino3cd_ablation}所示，其中，BaseLine为对DINOv3中的四层特征图进行特征细化与均值融合，最后采用四级逐级上采样的解码器，MFCE则为本文提出的多层融合与上下文增强解码器。实验结果表明，无论采用 Adapter 还是 LoRA 微调策略，MFCE 解码器相较于仅对最后一层特征进行上采样的基线（Baseline）解码器，均表现出显著的性能优势。这证实了我们的观点：对于缺乏天然特征金字塔的 ViT 类骨干网络，MFCE 解码器通过有效融合多层级同尺度特征并增强上下文感知，成功弥补了其在空间细节恢复上的不足，从而生成了更精细、更准确的变化检测结果。
+此外，为进一步验证 DINO3CD 架构中多层融合与上下文增强解码器设计的有效性，我们进行了第二组消融实验，专门评估了所提出的多层融合与上下文增强（MFCE）解码器的贡献。如表~\label{tab:peftcd_dino3cd_ablation}所示，其中，BaseLine为对DINOv3中的四层特征图进行特征细化与均值融合，最后采用四级逐级上采样的解码器，MFCE则为本节提出的多层融合与上下文增强解码器。实验结果表明，无论采用 Adapter 还是 LoRA 微调策略，MFCE 解码器相较于仅对最后一层特征进行上采样的基线（Baseline）解码器，均表现出显著的性能优势。这证实了我们的观点：对于缺乏天然特征金字塔的 ViT 类骨干网络，MFCE 解码器通过有效融合多层级同尺度特征并增强上下文感知，成功弥补了其在空间细节恢复上的不足，从而生成了更精细、更准确的变化检测结果。
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
-\scriptsize
+\small
 \setlength{\tabcolsep}{3pt} % 调整列间距
 \caption{不同主干模型与参数高效微调（PEFT）方法的消融实验结果（IoU \%）}
 \label{tab:peftcd_ablation}
 \begin{tabularx}{\textwidth}{p{1.8cm} p{2.5cm} *{7}{c}}
 \toprule
-\textbf{Backbone} & \textbf{Fine-tuning Method} & \textbf{SYSU-CD} & \textbf{WHUCD} & \textbf{S2Looking} & \textbf{MSRSCD} & \textbf{MLCD} & \textbf{LEVIR-CD} & \textbf{CDD} \\
+\textbf{Backbone} & \makecell{\textbf{Fine-tuning}\\\textbf{Method}} & \makecell{\textbf{SYSU-}\\\textbf{CD}} & \textbf{WHUCD} & \textbf{S2Looking} & \textbf{MSRSCD} & \textbf{MLCD} & \makecell{\textbf{LEVIR-}\\\textbf{CD}} & \textbf{CDD} \\
 \midrule
 \multirow{3}{*}{SAM2}
 & Frozen Encoder & 69.45 & 87.83 & 47.98 & 60.42 & 73.49 & 83.58 & 95.95 \\
@@ -901,15 +906,15 @@ PeftCD  & 99.22 & 85.62 & 92.25 & 91.44 & 93.08 \\
 \end{tabularx}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
-\scriptsize
+\small
 \setlength{\tabcolsep}{3pt} % 调整列间距
 \caption{DINO3CD中多层融合与上下文增强解码器的消融实验结果（IoU \%）}
 \label{tab:peftcd_dino3cd_ablation}
 \begin{tabularx}{\textwidth}{p{1.8cm} p{2.5cm} *{7}{c}}
 \toprule
-\textbf{PEFT} & \textbf{Decoder} & \textbf{SYSU-CD} & \textbf{WHUCD} & \textbf{S2Looking} & \textbf{MSRSCD} & \textbf{MLCD} & \textbf{LEVIR-CD} & \textbf{CDD} \\
+\textbf{Backbone} & \makecell{\textbf{Fine-tuning}\\\textbf{Method}} & \makecell{\textbf{SYSU-}\\\textbf{CD}} & \textbf{WHUCD} & \textbf{S2Looking} & \textbf{MSRSCD} & \textbf{MLCD} & \makecell{\textbf{LEVIR-}\\\textbf{CD}} & \textbf{CDD} \\
 \midrule
 \multirow{2}{*}{Adapter} 
 & Baseline & 70.66 & 90.96 & 49.42 & 61.83 & 75.42 & 83.69 & 94.87 \\
@@ -923,12 +928,12 @@ PeftCD  & 99.22 & 85.62 & 92.25 & 91.44 & 93.08 \\
 \end{table}
 
 
-\subsection{讨论}
+\subsection{PeftCD架构的局限性与未来方向}
 \subsubsection{基于单尺度 ViT 骨干的解码}
-以 DINOv3 为代表的 ViT 骨干在固定的 $1/16$ 分辨率下进行深层特征变换，因而天然缺乏 CNN/FPN 式的\emph{多尺度空间金字塔}。这一局限带来了两个典型问题：（\emph{i}）在上采样过程中，边界和小目标容易产生\emph{空间混叠}与\emph{锯齿化伪影}；（\emph{ii}）当仅依赖单尺度全局语义时，局部几何与纹理差异往往被削弱，而这些差异恰是变化检测的关键证据。为此，本章设计了一种基于“\emph{同尺度多层深度注意力融合} + ASPP 上下文增强 + 渐进式上采样”的解码器，在不改变主干分辨率的前提下弥补语义与几何之间的落差。尽管同尺度多层融合显著缓解了单尺度瓶颈，但仍然存在以下问题：（\emph{i}）由于 $1/16$ 下采样带来的\emph{分辨率上限}，对小目标的刻画仍受限制；（\emph{ii}）ASPP 的固定膨胀率限制了其对不同尺度目标的自适应性；（\emph{iii}）在大规模模型中，多层融合带来了相对较高的计算与存储开销。我们认为，未来工作可以进一步改进单尺度 ViT 解码器：（\emph{i}）设计更高效的多层融合模块，或引入轻量级的跨层交互机制；（\emph{ii}）结合辅助特征编码分支，以捕获更精细的图像细节。
+以 DINOv3 为代表的 ViT 骨干在固定的 $1/16$ 分辨率下进行深层特征变换，因而天然缺乏 CNN/FPN 式的多尺度空间金字塔。这一局限带来了两个典型问题：（i）在上采样过程中，边界和小目标容易产生空间混叠与锯齿化伪影；（ii）当仅依赖单尺度全局语义时，局部几何与纹理差异往往被削弱，而这些差异恰是变化检测的关键证据。为此，本节设计了一种基于“同尺度多层深度注意力融合 + ASPP 上下文增强 + 渐进式上采样”的解码器，在不改变主干分辨率的前提下弥补语义与几何之间的落差。尽管同尺度多层融合显著缓解了单尺度瓶颈，但仍然存在以下问题：（i）由于 $1/16$ 下采样带来的分辨率上限，对小目标的刻画仍受限制；（ii）ASPP 的固定膨胀率限制了其对不同尺度目标的自适应性；（iii）在大规模模型中，多层融合带来了相对较高的计算与存储开销。我们认为，未来工作可以进一步改进单尺度 ViT 解码器：（i）设计更高效的多层融合模块，或引入轻量级的跨层交互机制；（ii）结合辅助特征编码分支，以捕获更精细的图像细节。
 
 \subsubsection{变化检测的 PEFT 策略}
-本章系统评估了 LoRA 与 Adapter 两种参数高效微调（PEFT）策略在变化检测中的表现。实验结果表明，这两种方法在保持骨干冻结的前提下，均能显著提升性能，尤其是在 WHUCD 和 CDD 等大规模数据集上。这表明，PEFT 能够在不破坏基础模型通用能力的情况下，快速适配“变化”这一下游任务。具体而言，LoRA 在注入注意力投影层时表现出更显著的性能提升，而 Adapter 由于其瓶颈设计，在不同 Transformer 层的插入中展现出更强的灵活性。然而，PEFT 在变化检测中仍存在一定局限性：（\emph{i}）当变化模式与预训练任务差异较大时（如 S2Looking 的侧视影像），PEFT 的适配能力相对有限，难以完全弥合域间差距；（\emph{ii}）LoRA 与 Adapter 大多是独立注入各层，其跨层交互仍然不足，导致在细粒度语义变化的边界捕捉上存在模糊；（\emph{iii}）当前 PEFT 配置大多是固定的（如秩、瓶颈维度），缺乏针对数据集特性或任务复杂度的自适应调整。
+本节系统评估了 LoRA 与 Adapter 两种参数高效微调（PEFT）策略在变化检测中的表现。实验结果表明，这两种方法在保持骨干冻结的前提下，均能显著提升性能，尤其是在 WHUCD 和 CDD 等大规模数据集上。这表明，PEFT 能够在不破坏基础模型通用能力的情况下，快速适配“变化”这一下游任务。具体而言，LoRA 在注入注意力投影层时表现出更显著的性能提升，而 Adapter 由于其瓶颈设计，在不同 Transformer 层的插入中展现出更强的灵活性。然而，PEFT 在变化检测中仍存在一定局限性：（i）当变化模式与预训练任务差异较大时（如 S2Looking 的侧视影像），PEFT 的适配能力相对有限，难以完全弥合域间差距；（ii）LoRA 与 Adapter 大多是独立注入各层，其跨层交互仍然不足，导致在细粒度语义变化的边界捕捉上存在模糊；（iii）当前 PEFT 配置大多是固定的（如秩、瓶颈维度），缺乏针对数据集特性或任务复杂度的自适应调整。
 
 \subsection{小结}
-本章提出了一种新颖的变化检测框架 \textbf{PeftCD}，通过结合视觉基础模型（如 SAM2、DINOv3）与参数高效微调（PEFT）策略，有效解决了遥感影像中的伪变化干扰与泛化困难。该方法通过冻结骨干的大部分参数，仅训练少量新增模块，成功地将基础模型的强大先验知识迁移到变化检测任务中。基于 SYSU-CD、WHUCD 等七个公开数据集的实验表明，PeftCD 在多项指标上均取得了最先进的性能，尤其在变化边界刻画与伪变化抑制方面表现突出。总体而言，本研究验证了 PeftCD 作为一种高效范式在精度、效率与泛化性之间的良好平衡，并为大规模基础模型在实际遥感应用中的落地提供了有价值的参考。
+本节提出了一种新颖的变化检测框架 \textbf{PeftCD}，通过结合视觉基础模型（如 SAM2、DINOv3）与参数高效微调（PEFT）策略，有效解决了遥感影像中的伪变化干扰与泛化困难。该方法通过冻结骨干的大部分参数，仅训练少量新增模块，成功地将基础模型的强大先验知识迁移到变化检测任务中。基于 SYSU-CD、WHUCD 等七个公开数据集的实验表明，PeftCD 在多项指标上均取得了最先进的性能，尤其在变化边界刻画与伪变化抑制方面表现突出。总体而言，本节验证了 PeftCD 作为一种高效范式在精度、效率与泛化性之间的良好平衡，并为大规模基础模型在实际遥感应用中的落地提供了有价值的参考。

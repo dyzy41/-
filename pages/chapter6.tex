@@ -1,10 +1,10 @@
 
 \chapter{基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法}
-\section{引言}
+\section{双时相影像的风格差异分析}
 近年来，基于深度学习的算法在遥感图像变化检测中取得了显著进展，特别是卷积神经网络（CNN）~\cite{Chen2020DASNetDA,Fang2021SNUNetCDAD}和Transformer架构~\cite{chen_remote_2022,zhang_swinsunet_2022}的应用。然而，变化检测任务中的一个关键挑战依然存在：双时相图像由于光照、季节或传感器噪声的变化，常常包含显著的风格差异。这些因素引入了不相关的特征级扰动，从而降低了检测精度。本章通过UMAP算法~\cite{McInnes2018UMAPUM}对五个数据集进行分析，并在图~\ref{fig:domain_vis}中可视化，证实了这一点。观察到双时相特征金字塔中的低级特征存在明显的域间隙。由于模型难以处理大的域间隙，这种与风格相关的干扰严重影响了变化检测任务。因此，有效解耦和利用内容与风格特征，成为提高精度和鲁棒性的关键挑战。
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\textwidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/domain_vis.png}
 	\caption{该图显示了双时相图像的低级特征经过UMAP投影到二维空间后的分布。圆圈（域A）和方块（域B）代表来自双时相图像的特征样本，标记 \textcolor{green}{\textbf{×}} 和 \textcolor{red}{\textbf{+}} 表示它们各自的质心。连接质心的线表示它们之间的距离，反映了整体域偏移。图中还展示了三个定量域差异度量：质心距离、最大均值差异（MMD）和CORAL距离，它们分别从几何中心、分布一致性和协方差结构的角度表征了域间差异。}
@@ -19,15 +19,8 @@
 
 
 
-综上所述，本章工作的主要贡献如下：
 
-\begin{enumerate}[label=(\arabic*)]
-\item 提出了CSDNet，一个通过集成内容-风格分离与通道-空间细化显著改进遥感变化检测的新型模型。
-\item 引入了内容-风格解耦模块（CSDM），通过门控机制过滤掉不相关的风格干扰并保留有益的风格线索。
-\item 提出了上下文内容细化模块（CCRM），它使用联合通道-空间门控机制来细化特征并增强模型对变化区域的敏感性。
-\end{enumerate}
-
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\textwidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/CSDNet.png}
 	\caption{CSDNet模型总体结构}
@@ -40,7 +33,7 @@
 \subsection{CSDNet总体架构展示}
 如图~\ref{fig:CSDNet}所示，模型的整体结构仍旧采用第三章提出的SEED架构。双时相图像首先通过特征提取网络HRNet模型，提取多尺度特征金字塔。随后，特征金字塔通过\textbf{内容-风格解耦模块（CSDM）}进行内容-风格分解，以获得内容特征和风格残差。同时，利用门控机制对风格残差进行过滤，保留对变化检测有用的风格信息，如~\ref{fig:CSDNet}左侧所示。处理后的风格特征随后与原始内容特征重新组合，得到纯化后的特征。在此阶段，使用CSDM模块优化Siamese网络提取的多尺度特征的风格特征，使变化检测模型更专注于提取变化信息，从而优化变化检测任务。
 
-接下来，采用特征层交换机制，对双时相影像的特征金字塔进行跨层交互（参考 EfficientCD~\cite{dong_efficientcd_2024}）。具体而言，设时相 $t_1$ 的特征金字塔为 $(F^1_1, F^1_2, F^1_3, F^1_4)$，时相 $t_2$ 的特征金字塔为 $(F^2_1, F^2_2, F^2_3, F^2_4)$，其中下标表示从浅层到深层的金字塔层级。在交换操作中，每隔一层进行特征交换（如 $F^1_2 \leftrightarrow F^2_2$ 和 $F^1_4 \leftrightarrow F^2_4$），从而得到混合金字塔 $(F^1_1, F^2_2, F^1_3, F^2_4)$ 和 $(F^2_1, F^1_2, F^2_3, F^1_4)$。这种方式能够实现跨时相特征的直接对齐，使一个时相的信息注入到另一个时相的非相邻层级，有效提升模型对结构变化的敏感性，同时保持语义层次结构。
+接下来，采用特征层交换机制，对双时相影像的特征金字塔进行跨层交互（参考前文提到的EfficientCD）。具体而言，设时相 $t_1$ 的特征金字塔为 $(F^1_1, F^1_2, F^1_3, F^1_4)$，时相 $t_2$ 的特征金字塔为 $(F^2_1, F^2_2, F^2_3, F^2_4)$，其中下标表示从浅层到深层的金字塔层级。在交换操作中，每隔一层进行特征交换（如 $F^1_2 \leftrightarrow F^2_2$ 和 $F^1_4 \leftrightarrow F^2_4$），从而得到混合金字塔 $(F^1_1, F^2_2, F^1_3, F^2_4)$ 和 $(F^2_1, F^1_2, F^2_3, F^1_4)$。这种方式能够实现跨时相特征的直接对齐，使一个时相的信息注入到另一个时相的非相邻层级，有效提升模型对结构变化的敏感性，同时保持语义层次结构。
 
 随后，基于特征交换后的双时相特征金字塔，使用FPN结构进行特征融合，以获得多尺度双时相特征图。在解码器中，使用常规的逐层上采样进行解码。最后，对于解码头，设计了一个\textbf{上下文内容细化模块（CCRM）}，以进一步细化解码器输出的特征，从而增强变化检测的任务相关信号，如图~\ref{fig:CSDNet}右侧所示。细化后的特征随后被映射到变化概率图。在整个CSDNet中，编码器、CSDM、FPN、解码器和解码头等模块均采用参数共享策略，从而实现有效的参数重用，减少模型的参数量。
 
@@ -54,11 +47,9 @@ F_{\mathrm{content}} = \operatorname{IN}(F)
 \end{equation}
 其中InstanceNorm操作定义为
 \begin{equation}
-\mu_c = \frac{1}{HW}\sum_{i=1}^{H}\sum_{j=1}^{W}F_{cij},\quad
-\sigma_c = \sqrt{\frac{1}{HW}\sum_{i,j}\bigl(F_{cij}-\mu_c\bigr)^2+\epsilon},
-\end{equation}
-\begin{equation}
-\operatorname{IN}(F)_{cij}=\frac{F_{cij}-\mu_c}{\sigma_c},
+\mu_c = \frac{1}{HW}\sum_{i=1}^{H}\sum_{j=1}^{W}F_{cij}
+\sigma_c = \sqrt{\frac{1}{HW}\sum_{i,j}\bigl(F_{cij}-\mu_c\bigr)^2+\epsilon}
+\operatorname{IN}(F)_{cij}=\frac{F_{cij}-\mu_c}{\sigma_c}
 \end{equation}
 该操作将每个样本的每个通道沿空间维度归一化为零均值和单位方差，从而有效地消除了与风格相关的全局统计信息，如亮度、对比度和噪声差异，同时保留了空间结构和局部纹理细节。因此，$\operatorname{IN}(F)$可以被视为图像“内容”信息的有效近似。随后，通过残差计算可以获得输入图像特征的风格残差：
 \begin{equation}
@@ -85,7 +76,6 @@ S = \tilde A + \tilde M
 \begin{equation}
 G = \sigma\bigl(\mathrm{Conv}_2(S)\bigr),\quad G\in[0,1]^{C\times1\times1}
 \end{equation}
-
 \begin{equation}
 F'_{\mathrm{style}} = F_{\mathrm{style}} \,\otimes\, G
 \end{equation}
@@ -97,18 +87,17 @@ F'_{\mathrm{style}} = F_{\mathrm{style}} \,\otimes\, G
 
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\textwidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/csdnet_sysu.png}
 	\caption{CSDNet 模型与经典模型在SYSU-CD测试集上的可视化对比结果}
 	\label{fig:csdnet_sysu}
 \end{figure}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{CSDNet 模型与经典变化检测模型在 SYSU-CD 数据集上的定量对比结果}
 \label{tab:csdnet_sysu}
-\resizebox{\linewidth}{!}{%
 \begin{tabular}{l c c c c c}
 \toprule
 Method & OA & IoU & F1 & Recall & Precision \\
@@ -129,24 +118,23 @@ ChangeMamba~\cite{chen2024changemamba} & 92.30 & 71.10 & 83.11 & 80.31 & 86.11 \
 \textbf{CSDNet} & 92.39 & 71.16 & 83.15 & 79.60 & 87.03 \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
 
 \subsection{上下文内容细化模块（CCRM）}
 在解码器中，对经过逐层上采样和融合后的特征$P\in\mathbb{R}^{C\times H\times W}$引入了上下文内容细化模块（CCRM），以进一步过滤和增强与变化检测任务相关的特征。CCRM包括四个步骤：内容-风格分解、通道门控、空间门控，最后将精炼后的风格重新组合回内容中。
 
-\paragraph{内容-风格分解}
+\subsubsection{内容-风格分解}
 首先，特征图$P$通过实例归一化（InstanceNorm）转换为内容特征$C$，并以残差形式提取风格特征$S$：
 \begin{equation}\label{eq:ccr_in}
-C = \operatorname{IN}(P),
+C = \operatorname{IN}(P)
 \end{equation}
 \begin{equation}\label{eq:ccr_residual}
-S = P - C,
+S = P - C
 \end{equation}
 其中，\(\operatorname{IN}(\cdot)\)在空间上对每个样本的每个通道进行去均值和除以方差的操作，移除了全局统计信息（如亮度、对比度、噪声差异），仅保留纹理和结构信息。这使得\(C\)更加稳定可靠，而\(S\)则包含了剩余的“风格”成分，包括噪声和对变化检测有害的变化。
 
-\paragraph{通道门控}
+\subsubsection{通道门控}
 为了在通道维度上自适应地选择有用的风格成分，CCRM采用了全局平均池化（AvgPool）和全局最大池化（MaxPool）的并行处理，随后通过共享变换生成一个通道门控图\(G_{\mathrm{chan}}\in[0,1]^{C\times1\times1}\)。具体步骤如下：
 
 \begin{equation}\label{eq:ccr_avg_pool}
@@ -169,12 +157,11 @@ M = W_2\Bigl(\mathrm{ReLU}\bigl(W_1(U_{\mathrm{max}})\bigr)\Bigr)
 G_{\mathrm{chan}} = \sigma\bigl(A + M\bigr)
 \end{equation}
 
-- 其中$W_1$代表一个通道压缩的$1\times1$卷积，将通道数从$C$减少到$C/r$；经过ReLU激活后，$W_2$使用另一个$1\times1$卷积将通道数恢复到$C$。
-- 其中$\sigma$是Sigmoid函数，$G_{\mathrm{chan}}$的每个元素都在$[0,1]$之间，代表相应通道的重要性权重。
+其中$W_1$代表一个通道压缩的$1\times1$卷积，将通道数从$C$减少到$C/r$；经过ReLU激活后，$W_2$使用另一个$1\times1$卷积将通道数恢复到$C$。$\sigma$是Sigmoid函数，$G_{\mathrm{chan}}$的每个元素都在$[0,1]$之间，代表相应通道的重要性权重。
 
 通道门控可以根据全局统计信息自适应地抑制或增强特定通道的风格信息，使模型关注于对变化检测有贡献的通道特征。
 
-\paragraph{空间门控}
+\subsubsection{空间门控}
 在空间维度上，首先对风格特征$S$沿通道维度进行平均池化和最大池化，然后将它们拼接起来，并通过一个大感受野的卷积生成一个空间门控图$G_{\mathrm{spat}}\in[0,1]^{1\times H\times W}$：
 \begin{equation}\label{eq:ccr_spat_mean}
 M_{\mathrm{mean}} = \frac{1}{C}\sum_{c=1}^{C} S_c,\quad M_{\mathrm{mean}}\in\mathbb{R}^{1\times H\times W}
@@ -188,33 +175,32 @@ M_{\mathrm{max}} = \max_{c=1,\dots,C} S_c,\quad M_{\mathrm{max}}\in\mathbb{R}^{1
 G_{\mathrm{spat}} = \sigma\Bigl(\mathrm{Conv}_{7\times7}\bigl([M_{\mathrm{mean}};\,M_{\mathrm{max}}]\bigr)\Bigr)
 \end{equation}
 
-- $M_{\mathrm{mean}}$和$M_{\mathrm{max}}$分别捕获了跨通道的平均响应和最强响应。拼接后的双通道输入被送入一个$7\times7$卷积以获得丰富的空间上下文。
+$M_{\mathrm{mean}}$和$M_{\mathrm{max}}$分别捕获了跨通道的平均响应和最强响应。拼接后的双通道输入被送入一个$7\times7$卷积以获得丰富的空间上下文。
 
-\paragraph{风格重组与输出}
+\subsubsection{风格重组与输出}
 最后，通道门控和空间门控都作用于$S$，其结果被加回到内容特征$C$中，以获得精炼后的特征$\hat P$：
 \begin{equation}\label{eq:ccr_style_refine}
-S' = S \otimes G_{\mathrm{chan}} \otimes G_{\mathrm{spat}},
+S' = S \otimes G_{\mathrm{chan}} \otimes G_{\mathrm{spat}}
 \end{equation}
 \begin{equation}\label{eq:ccr_output}
-\hat P = C + S'.
+\hat P = C + S'
 \end{equation}
 
 \noindent
 这里，\(\hat P\)是精炼后的特征图，包含了经过门控过滤的风格信息。通过这种方式，CCRM可以在通道和空间两个维度上自适应地过滤风格信息，抑制不相关的干扰，并保留对变化检测有帮助的特征，从而显著提高解码器输出的语义准确性和鲁棒性。
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\textwidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/csdnet_s2looking.png}
 	\caption{CSDNet 模型与经典模型在S2Looking测试集上的可视化对比结果}
 	\label{fig:csdnet_s2looking}
 \end{figure}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{模型与经典变化检测模型在 S2Looking 数据集上的定量对比结果}
 \label{tab:csdnet_s2looking}
-\resizebox{\linewidth}{!}{%
 \begin{tabular}{l c c c c c}
 \toprule
 Method & OA & IoU & F1 & Recall & Precision \\
@@ -232,41 +218,39 @@ Changer~\cite{Fang2022ChangerFI} & -- & 50.47 & 67.08 & 62.04 & 73.01 \\
 \textbf{CSDNet} & 99.24 & 50.72 & 67.31 & 64.34 & 70.55 \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
 \subsection{CSDNet中的损失函数}
 在CSDNet模型中，使用一种基于交叉熵的简单损失函数来训练模型。如~\ref{fig:CSDNet}所示，有两个等效的解码头（Decode Head）。该模型采用双分支二元分类方案，并使用交叉熵进行监督。设两个分支的原始logit为\(o^{(1)}\)和\(o^{(2)}\)，真实标签为\(y\in\{0,1\}\)。单个分支的交叉熵损失定义为
 \begin{equation}
 \mathcal{L}_{\mathrm{CE}}(o, y)
-= -\log\left(\frac{\exp(o_{y})}{\sum_{k=0}^1 \exp(o_{k})}\right),
+= -\log\left(\frac{\exp(o_{y})}{\sum_{k=0}^1 \exp(o_{k})}\right)
 \end{equation}
 其中\(o_k\)表示对应于类别\(k\)的logit。在训练期间，最终的损失是两个分支级交叉熵损失的平均值：
 \begin{equation}
 \mathcal{L}_{\text{train}}
 = \frac{1}{2}\left(\mathcal{L}_{\mathrm{CE}}\bigl(o^{(1)}, y\bigr)
-+ \mathcal{L}_{\mathrm{CE}}\bigl(o^{(2)}, y\bigr)\right).
++ \mathcal{L}_{\mathrm{CE}}\bigl(o^{(2)}, y\bigr)\right)
 \end{equation}
 这种形式利用了两个分支之间的冗余性和互补性来提高鲁棒性，而平均操作则防止了任何单个分支主导梯度。在推理时，将两个分支的logit进行平均以产生最终预测：
 \begin{equation}
-\hat{o} = \frac{1}{2}\left(o^{(1)} + o^{(2)}\right),
+\hat{o} = \frac{1}{2}\left(o^{(1)} + o^{(2)}\right)
 \end{equation}
 与使用单个分支相比，这会产生更平滑、更稳定的分类输出。
 
 \section{实验结果与分析}
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\linewidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/csdnet_whucd.png}
     \caption{CSDNet 模型与经典模型在 WHUCD 测试集上的可视化对比结果}
 	\label{fig:csdnet_whucd}
 \end{figure}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{CSDNet 模型与经典变化检测模型在 WHUCD 数据集上的定量对比结果}
 \label{tab:csdnet_whucd}
-\resizebox{\linewidth}{!}{%
 \begin{tabular}{l c c c c c}
 \toprule
 Method & OA & IoU & F1 & Recall & Precision \\
@@ -289,11 +273,10 @@ SAFDNet~\cite{Fu2025BeyondCD} & 99.55 & 90.73 & 95.14 & 94.47 & 95.82 \\
 \textbf{CSDNet} & 99.56 & 90.88 & 95.22 & 95.12 & 95.33 \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\linewidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/csdnet_msrscd.png}
     \caption{CSDNet 模型与经典模型在 MSRSCD 测试集上的可视化对比结果}
@@ -302,11 +285,10 @@ SAFDNet~\cite{Fu2025BeyondCD} & 99.55 & 90.73 & 95.14 & 94.47 & 95.82 \\
 
 \subsection{定量分析与可视化结果}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{CSDNet 模型与经典模型在 MSRSCD 数据集上的定量对比结果}
 \label{tab:csdnet_msrscd}
-\resizebox{\linewidth}{!}{%
 \begin{tabular}{l c c c c c}
 \toprule
 Method & OA & IoU & F1 & Recall & Precision \\
@@ -325,7 +307,6 @@ DFFNet~\cite{Liu2025FullScaleCD} & 93.23 & 61.82 & 77.44 & 78.69 & 76.22 \\
 \textbf{CSDNet} & 93.07 & 62.01 & 76.55 & 76.38 & 76.73 \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
 \subsection{实验结果量化指标与可视化分析}
@@ -342,18 +323,17 @@ DFFNet~\cite{Liu2025FullScaleCD} & 93.23 & 61.82 & 77.44 & 78.69 & 76.22 \\
 为了验证所提出的内容-风格解耦模块 (Content–Style Disentanglement Module, CSDM) 和上下文内容精炼模块 (Contextual Content Refiner Module, CCRM) 的有效性，进行了一系列消融实验，在 SYSU-CD、LEVIR-CD、WHUCD、MSRSCD 和 S2Looking 五个公开数据集上，以 IoU 为主要评估指标，评估了模型在不同配置下的性能。如表~\ref{tab:csdnet_ablation} 所示，当模型不包含 CSDM 和 CCRM 模块作为基线时，其在各个数据集上的 IoU 表现处于基础水平。令人鼓舞的是，当独立引入 CSDM 模块后，模型在所有数据集上的性能均得到显著提升。这有力地证明了 CSDM 通过其内容-风格解耦机制，有效抑制了背景风格噪声，增强了双时相图像间的特征对齐，从而提高了模型感知真实变化的能力，在处理具有复杂或异构风格差异的图像时表现出尤为突出的鲁棒性。同样地，在独立引入 CCRM 模块后，模型性能也呈现出积极的提升。这验证了 CCRM 在解码阶段，能够通过上下文内容精炼和联合通道-空间门控机制对特征进行再提纯，增强了对变化区域的感知，并有助于更精细地描绘变化区域。最重要的是，当 CSDM 和 CCRM 模块被同时集成时，模型的性能达到了最佳状态，在所有数据集上均取得了最高的 IoU。这强有力地证明了 CSDM 和 CCRM 并非简单的叠加效应，而是在编码和解码阶段通过有效的协同工作，共同提升了模型的特征表示能力和变化检测性能。CSDM 在前期处理风格噪声、提纯特征，而 CCRM 则在后期对这些提纯后的特征进行更精细的上下文感知精炼。
 
 
-\begin{figure}[!htbp]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=\linewidth]{paper_figures/基于双时相遥感影像风格解缠和内容细化增强遥感变化检测方法/csdnet_levir.png}
     \caption{CSDNet 模型与经典模型在 LEVIR-CD 测试集上的可视化对比结果}
 	\label{fig:csdnet_levir}
 \end{figure}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{CSDNet 模型与经典模型在 LEVIR-CD 数据集上的定量对比结果}
 \label{tab:csdnet_levir}
-\resizebox{\linewidth}{!}{%
 % 这里是关键修改：将所有的 S[...] 列类型改为了 c (居中)
 \begin{tabular}{l c c c c c} 
 \toprule
@@ -377,15 +357,13 @@ STransUNet~\cite{Yuan2022STransUNetAS} & 99.13 & 84.19 & 91.41 & 90.55 & 92.30 \
 \textbf{CSDNet} & \textbf{99.16} & \textbf{84.47} & \textbf{91.58} & \textbf{90.00} & \textbf{93.23} \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
 \caption{CSDNet 模型的消融实验结果 (IoU \%)}
 \label{tab:csdnet_ablation}
-\resizebox{\linewidth}{!}{%
 \begin{tabular}{ccccccc}
 \toprule
 \textbf{CSDM} & \textbf{CCRM} & \textbf{SYSU-CD} & \textbf{LEVIR-CD} & \textbf{WHUCD} & \textbf{MSRSCD} & \textbf{S2Looking} \\
@@ -396,20 +374,19 @@ $\times$ & $\checkmark$ & 70.64 & 83.85 & 90.38 & 60.88 & 50.22 \\
 $\checkmark$ & $\checkmark$ & \textbf{71.16} & \textbf{84.47} & \textbf{90.88} & \textbf{62.01} & \textbf{50.72} \\
 \bottomrule
 \end{tabular}%
-}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[!htb]
 \centering
-\scriptsize
+\small
 \setlength{\tabcolsep}{3pt} % 调整列间距
 \caption{CSDNet 模型在五个数据集上训练前后的 UMAP 嵌入域差异度量。负增量表示训练后度量下降（通常表示域间隙减小）。}
 \label{tab:domain_metrics_transposed_improved_delta}
 \begin{tabular}{l l c c c c c}
 \toprule
-Metric & Stage & {WHUCD} & {MSRSCD} & {S2Looking} & {LEVIR-CD} & {SYSU-CD} \\
+Metric & Stage & {WHUCD} & {MSRSCD} & {S2Looking} & LEVIR-CD & SYSU-CD \\
 \midrule
-\multirow{3}{*}{Centroid dist} 
+\multirow{3}{*}{\makecell{Centroid\\dist}}
   & Before training & 9.5444 & 1.0438 & 8.1495 & 7.2442  & 13.0549 \\
   & After training  & 7.8133 & 1.2386 & 7.5414 & 2.8456  & 11.2671 \\
   & $\Delta$ & \textcolor{red}{\textbf{-1.7311}} & \textcolor{blue}{\textbf{+0.1948}} & \textcolor{red}{\textbf{-0.6081}} & \textcolor{red}{\textbf{-4.3986}} & \textcolor{red}{\textbf{-1.7878}} \\
@@ -427,7 +404,7 @@ Metric & Stage & {WHUCD} & {MSRSCD} & {S2Looking} & {LEVIR-CD} & {SYSU-CD} \\
 \end{tabular}
 \end{table}
 
-\section{讨论}
+\section{CSDNet模型的可行性分析与讨论}
 
 \subsection{内容-风格解耦与变化敏感性}
 内容-风格解耦模块 (CSDM) 在减轻双时相图像的风格干扰和增强变化敏感性方面展现了实证有效性。如表~\ref{tab:domain_metrics_transposed_improved_delta} 所示，计算了训练前后特征在 UMAP 嵌入空间上的三种域差异度量——质心距离 (centroid distance)、最大均值差异 (maximum mean discrepancy, MMD) 和 CORAL。这些指标量化了双时相图像特征分布的对齐程度，数值越低表明对齐效果越好，风格噪声越少。
