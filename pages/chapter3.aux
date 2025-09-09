@@ -1,0 +1,243 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\citation{ting_bai_deep_2023}
+\citation{YGXB202309001}
+\citation{dong_efficientcd_2024}
+\citation{chen_remote_2022,zhang_swinsunet_2022,wang2022unetformer}
+\citation{shi_change_2020,lv_land_2022}
+\citation{shi_deeply_2022}
+\citation{zhu_land-useland-cover_2022-1}
+\pp@pagectr{footnote}{3}{55}{37}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3\hspace  {.3em}}变化检测任务基础范式设计}{37}{chapter.3}\protected@file@percent }
+\@writefile{lof}{\addvspace {10.0pt}}
+\@writefile{lot}{\addvspace {10.0pt}}
+\@writefile{loa}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}引言}{37}{section.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Siamese 编码器 + 融合 + 解码器。首先，Siamese 编码器提取双时相特征图，然后将这些特征图进行融合，最后对融合后的特征图进行解码。}}{37}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:SEED1a}{{3.1}{37}{Siamese 编码器 + 融合 + 解码器。首先，Siamese 编码器提取双时相特征图，然后将这些特征图进行融合，最后对融合后的特征图进行解码。}{figure.caption.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Siamese 交换（编码器）+ 融合 + 解码器。首先，Siamese 编码器在提取双时相特征图的同时进行特征交换，以增强跨时相的信息交互。交换后的特征图随后进行融合，融合后的特征图最终被解码。}}{38}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:SEED1b}{{3.2}{38}{Siamese 交换（编码器）+ 融合 + 解码器。首先，Siamese 编码器在提取双时相特征图的同时进行特征交换，以增强跨时相的信息交互。交换后的特征图随后进行融合，融合后的特征图最终被解码。}{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Siamese 交换（编码器）+ 融合 + 三分支解码器。首先，Siamese 编码器提取双时相特征图，同时进行特征交换，以增强跨时相的信息交互。接下来，交换后的特征图被融合并解码；此外，经过特征交换的 Siamese 编码器分支也被解码。}}{38}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:SEED1c}{{3.3}{38}{Siamese 交换（编码器）+ 融合 + 三分支解码器。首先，Siamese 编码器提取双时相特征图，同时进行特征交换，以增强跨时相的信息交互。接下来，交换后的特征图被融合并解码；此外，经过特征交换的 Siamese 编码器分支也被解码。}{figure.caption.23}{}}
+\citation{pei_feature_2022,x_zhang_difunet_2022,gu2023fdff}
+\citation{gu2023fdff,wan_d-tnet_2022-3,wang_hmcnet_2022-2}
+\citation{pei_feature_2022,gu2023fdff}
+\citation{gu2023fdff,shi_deeply_2022,x_zhang_difunet_2022}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces \textbf  {Siamese Encoder-Exchange-Decoder (SEED)}. 首先，Siamese 编码器提取双时相特征图。这些特征图随后被交换，最后对交换后的编码器分支进行解码。}}{39}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:SEED1d}{{3.4}{39}{\textbf {Siamese Encoder-Exchange-Decoder (SEED)}. 首先，Siamese 编码器提取双时相特征图。这些特征图随后被交换，最后对交换后的编码器分支进行解码。}{figure.caption.24}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces 三种常见的特征交换方法：层交换、通道交换和空间交换。}}{39}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:seed_exchange}{{3.5}{39}{三种常见的特征交换方法：层交换、通道交换和空间交换。}{figure.caption.25}{}}
+\citation{dong_efficientcd_2024}
+\citation{Fang2022ChangerFI,zhao_exchanging_2023}
+\citation{Fang2022ChangerFI,zhao_exchanging_2023}
+\citation{dong_efficientcd_2024,Fang2022ChangerFI,zhao_exchanging_2023}
+\citation{chen_spatial-temporal_2020}
+\citation{shi_deeply_2022}
+\citation{lin_transition_2023}
+\citation{lu_cross_2024}
+\citation{li_densely_2022}
+\citation{y_zhou_stdf_2025}
+\citation{h_wei_spatio-temporal_2024}
+\citation{j_chen_sganet_2025}
+\citation{b_huang_remote-sensing_2024}
+\citation{zhan_amfnet_2024}
+\citation{li_cmcd_2025}
+\citation{w_xie_mifnet_2025}
+\citation{chen_spatial-temporal_2020}
+\citation{zhang_cdmamba_2025}
+\citation{zhan_amfnet_2024}
+\citation{h_ren_interactive_2025}
+\citation{zhao_rs-mamba_2024}
+\citation{f_zhou_dual-granularity_2025}
+\citation{j_li_trsanet_2024}
+\citation{Xu2024HybridAT}
+\citation{zhang_global-aware_2023}
+\citation{li_cmcd_2025}
+\citation{h_wei_spatio-temporal_2024}
+\citation{b_huang_remote-sensing_2024}
+\citation{y_zhou_stdf_2025}
+\citation{y_xing_sffce-cd_2025}
+\citation{w_xie_mifnet_2025}
+\citation{j_chen_sganet_2025}
+\citation{lu_cross_2024}
+\citation{t_zhu_fta-net_2025}
+\citation{wei_robust_2024}
+\citation{c_tao_hasnet_2025}
+\citation{li_overcoming_2025}
+\citation{li_dual_2025}
+\citation{wang_rsbuilding_2024}
+\citation{dong_efficientcd_2024,Fang2022ChangerFI,zhao_exchanging_2023}
+\citation{liu_swin_2021-5}
+\citation{tan_efficientnet_2019}
+\citation{He2015DeepRL}
+\citation{lin_feature_2017}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Siamese Encoder-Exchange-Decoder (SEED) 总体架构}}{41}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:SEED_Framework}{{3.6}{41}{Siamese Encoder-Exchange-Decoder (SEED) 总体架构}{figure.caption.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces  SEED 模型与经典变化检测模型在 SYSU-CD 数据集的可视化对比结果。}}{41}{figure.caption.27}\protected@file@percent }
+\newlabel{fig:seed_sysu}{{3.7}{41}{SEED 模型与经典变化检测模型在 SYSU-CD 数据集的可视化对比结果。}{figure.caption.27}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces SEED 模型在 SYSU-CD 数据集上的定量对比结果}}{42}{table.caption.28}\protected@file@percent }
+\newlabel{tab:seed_sysu}{{3.1}{42}{SEED 模型在 SYSU-CD 数据集上的定量对比结果}{table.caption.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces SEED模型与经典变化检测模型在 LEVIR-CD 数据集的可视化对比结果。}}{42}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:seed_levir}{{3.8}{42}{SEED模型与经典变化检测模型在 LEVIR-CD 数据集的可视化对比结果。}{figure.caption.29}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces SEED 模型与经典变化检测模型在 LEVIR-CD 数据集上的定量对比结果}}{43}{table.caption.30}\protected@file@percent }
+\newlabel{tab:seed_levir}{{3.2}{43}{SEED 模型与经典变化检测模型在 LEVIR-CD 数据集上的定量对比结果}{table.caption.30}{}}
+\citation{dong_efficientcd_2024,Fang2022ChangerFI,zhao_exchanging_2023}
+\citation{Han2024HANetAH}
+\citation{m_liu_cnn-transformer_2022}
+\citation{feng_ddam-net_2024}
+\citation{chen_remote_2022}
+\citation{zhang_global-aware_2023}
+\citation{feng_change_2023}
+\citation{miao_snunet3_2024}
+\citation{han_change_2023}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}SEED架构设计方法}{44}{section.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}整体架构}{44}{subsection.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}特征交换方法}{44}{subsection.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2.1}特征图层交换（Layer-Exchange, LE）}{44}{subsubsection.3.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2.2}特征图通道交换（Channel-Exchange, CE）}{44}{subsubsection.3.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2.3}特征图空间交换（Spatial-Exchange, SE）}{44}{subsubsection.3.2.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces SEED 模型与经典变化检测模型在 PX-CLCD 数据集的可视化对比结果。}}{45}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:seed_pxclcd}{{3.9}{45}{SEED 模型与经典变化检测模型在 PX-CLCD 数据集的可视化对比结果。}{figure.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces SEED 模型与经典变化检测模型在 PX-CLCD 数据集上的定量对比结果}}{45}{table.caption.32}\protected@file@percent }
+\newlabel{tab:seed_pxclcd}{{3.3}{45}{SEED 模型与经典变化检测模型在 PX-CLCD 数据集上的定量对比结果}{table.caption.32}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2.4}随机交换（Random Exchange）}{46}{subsubsection.3.2.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces SEED 模型与经典变化检测模型在 Water-CD 数据集的可视化对比结果}}{46}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:seed_watercd}{{3.10}{46}{SEED 模型与经典变化检测模型在 Water-CD 数据集的可视化对比结果}{figure.caption.33}{}}
+\citation{ye_adjacent-level_2023}
+\citation{Han2024HANetAH}
+\citation{m_noman_elgc-net_2024}
+\citation{chen_remote_2022}
+\citation{feng_change_2023}
+\citation{zhang_global-aware_2023}
+\citation{wei_robust_2024}
+\citation{j_li_trsanet_2024}
+\citation{z_wang_bitemporal_2024}
+\citation{li_overcoming_2025}
+\citation{lu_cross_2024}
+\citation{zhang_cdmamba_2025}
+\citation{y_xing_sffce-cd_2025}
+\citation{m_noman_elgc-net_2024}
+\citation{f_zhou_dual-granularity_2025}
+\citation{zhang_global-aware_2023}
+\citation{d_sidekejiang_mldfnet_2025}
+\citation{Noman2023RemoteSC}
+\citation{li_dual_2025}
+\citation{x_li_dsfi-cd_2025}
+\citation{c_tao_hasnet_2025}
+\@writefile{lot}{\contentsline {table}{\numberline {3.4}{\ignorespaces SEED 模型与经典变化检测模型在 Water-CD 数据集上的定量对比结果}}{47}{table.caption.34}\protected@file@percent }
+\newlabel{tab:seed_watercd}{{3.4}{47}{SEED 模型与经典变化检测模型在 Water-CD 数据集上的定量对比结果}{table.caption.34}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}孪生-编码-交换-解码（SEED）框架设计原理}{47}{subsection.3.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces SEED 模型与经典变化检测模型在 CDD 数据集的可视化对比结果}}{48}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:seed_cdd}{{3.11}{48}{SEED 模型与经典变化检测模型在 CDD 数据集的可视化对比结果}{figure.caption.35}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.5}{\ignorespaces SEED 模型与经典变化检测模型在 CDD 数据集上的定量对比结果}}{48}{table.caption.36}\protected@file@percent }
+\newlabel{tab:seed_cdd}{{3.5}{48}{SEED 模型与经典变化检测模型在 CDD 数据集上的定量对比结果}{table.caption.36}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}实验结果与分析}{49}{section.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}实验结果量化指标与可视化分析}{49}{subsection.3.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces 基于IoU指标的SEED 架构配合不同特征交换方法在变化检测数据集上的对比结果}}{49}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:seed_rader_image}{{3.12}{49}{基于IoU指标的SEED 架构配合不同特征交换方法在变化检测数据集上的对比结果}{figure.caption.37}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces 针对于原始图像的特征交换的可视化结果，突出显示了变化区域。}}{50}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:seed_exchange_vis}{{3.13}{50}{针对于原始图像的特征交换的可视化结果，突出显示了变化区域。}{figure.caption.38}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces 基于通道交换的训练日志}}{50}{figure.caption.39}\protected@file@percent }
+\newlabel{fig:chanel_training}{{3.14}{50}{基于通道交换的训练日志}{figure.caption.39}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces 基于空间交换的训练日志}}{50}{figure.caption.40}\protected@file@percent }
+\newlabel{fig:spatial_training}{{3.15}{50}{基于空间交换的训练日志}{figure.caption.40}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}消融研究}{51}{subsection.3.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3.6}{\ignorespaces 基于 SEED 架构结合不同主干网络以及多种特征交换机制在 SYSU-CD 数据集上的测试结果}}{52}{table.caption.41}\protected@file@percent }
+\newlabel{tab:seed_sysu_backbone}{{3.6}{52}{基于 SEED 架构结合不同主干网络以及多种特征交换机制在 SYSU-CD 数据集上的测试结果}{table.caption.41}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}讨论}{52}{section.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}为何在变化检测任务中，特征交换有效？}{52}{subsection.3.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3.7}{\ignorespaces 基于 SEED 架构结合不同主干网络以及多种特征交换机制在 LEVIR-CD 数据集上的测试结果}}{53}{table.caption.42}\protected@file@percent }
+\newlabel{tab:seed_levir_backbone}{{3.7}{53}{基于 SEED 架构结合不同主干网络以及多种特征交换机制在 LEVIR-CD 数据集上的测试结果}{table.caption.42}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.8}{\ignorespaces 基于 SEED 架构结合不同主干网络以及多种特征交换机制在 PX-CLCD 数据集上的测试结果}}{54}{table.caption.43}\protected@file@percent }
+\newlabel{tab:seed_pxclcd_backbone}{{3.8}{54}{基于 SEED 架构结合不同主干网络以及多种特征交换机制在 PX-CLCD 数据集上的测试结果}{table.caption.43}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.9}{\ignorespaces 基于 SEED 架构结合不同主干网络以及多种特征交换机制在 Water-CD 数据集上的测试结果}}{55}{table.caption.44}\protected@file@percent }
+\newlabel{tab:seed_watercd_backbone}{{3.9}{55}{基于 SEED 架构结合不同主干网络以及多种特征交换机制在 Water-CD 数据集上的测试结果}{table.caption.44}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.10}{\ignorespaces 基于 SEED 架构结合不同主干网络以及多种特征交换机制在 CDD 数据集上的测试结果}}{56}{table.caption.45}\protected@file@percent }
+\newlabel{tab:seed_cdd_backbone}{{3.10}{56}{基于 SEED 架构结合不同主干网络以及多种特征交换机制在 CDD 数据集上的测试结果}{table.caption.45}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.11}{\ignorespaces SEED 架构与传统差异特征融合方法在参数 (M) 和 FLOPs (G) 方面的对比}}{56}{table.caption.46}\protected@file@percent }
+\newlabel{tab:seed_params_gflops}{{3.11}{56}{SEED 架构与传统差异特征融合方法在参数 (M) 和 FLOPs (G) 方面的对比}{table.caption.46}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.12}{\ignorespaces SEED 架构上基于随机交换方法的变化检测数据集性能指标}}{57}{table.caption.47}\protected@file@percent }
+\newlabel{tab:random_exchange_results}{{3.12}{57}{SEED 架构上基于随机交换方法的变化检测数据集性能指标}{table.caption.47}{}}
+\citation{wang2022unetformer}
+\citation{li_a2-fpn_2022}
+\citation{li_multiattention_2022}
+\citation{gao_adaptive_2025}
+\citation{wu_cmtfnet_2023}
+\citation{chen2018encoder}
+\citation{xie_segformer_2021}
+\citation{xiao_unified_2018}
+\citation{wang2022unetformer}
+\citation{li_a2-fpn_2022}
+\citation{li_multiattention_2022}
+\citation{gao_adaptive_2025}
+\citation{wu_cmtfnet_2023}
+\citation{chen2018encoder}
+\citation{xie_segformer_2021}
+\citation{xiao_unified_2018}
+\citation{chen2018encoder}
+\citation{h_zhang_context_2018}
+\citation{peng_end--end_2019,x_zhang_difunet_2022}
+\@writefile{lot}{\contentsline {table}{\numberline {3.13}{\ignorespaces 结合 SEED 架构与经典语义分割模型在 LEVIR-CD 数据集上的定量对比结果}}{58}{table.caption.48}\protected@file@percent }
+\newlabel{tab:seg2cd_seed_levir}{{3.13}{58}{结合 SEED 架构与经典语义分割模型在 LEVIR-CD 数据集上的定量对比结果}{table.caption.48}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.14}{\ignorespaces 结合 SEED 架构与经典语义分割模型在 SYSU-CD 数据集上的定量对比结果}}{58}{table.caption.49}\protected@file@percent }
+\newlabel{tab:seg2cd_seed_sysu}{{3.14}{58}{结合 SEED 架构与经典语义分割模型在 SYSU-CD 数据集上的定量对比结果}{table.caption.49}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}如何利用特征交换统一语义分割与变化检测框架？}{58}{subsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}探索 SEED 范式在变化检测任务中的应用}{59}{subsection.3.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3.1}轻量化变化检测中的 SEED}{59}{subsubsection.3.4.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3.15}{\ignorespaces 基于 IoU 指标的 SEED 架构的单解码器推理量化结果}}{60}{table.caption.50}\protected@file@percent }
+\newlabel{tab:inference_single_decoder}{{3.15}{60}{基于 IoU 指标的 SEED 架构的单解码器推理量化结果}{table.caption.50}{}}
+\citation{he_masked_2021}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3.2}自监督变化检测中的 SEED}{61}{subsubsection.3.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}本章小结}{61}{section.3.5}\protected@file@percent }
+\@setckpt{pages/chapter3}{
+\setcounter{page}{62}
+\setcounter{equation}{0}
+\setcounter{enumi}{4}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{3}
+\setcounter{section}{5}
+\setcounter{subsection}{0}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{15}
+\setcounter{table}{15}
+\setcounter{parentequation}{0}
+\setcounter{section@level}{0}
+\setcounter{Item}{7}
+\setcounter{Hfootnote}{0}
+\setcounter{Hy@AnnotLevel}{0}
+\setcounter{bookmark@seq@number}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{pp@a@footnote}{3}
+\setcounter{thmt@dummyctr}{0}
+\setcounter{lofdepth}{1}
+\setcounter{lotdepth}{1}
+\setcounter{theorem}{0}
+\setcounter{example}{0}
+\setcounter{question}{0}
+\setcounter{definition}{0}
+\setcounter{property}{0}
+\setcounter{proposition}{0}
+\setcounter{corollary}{0}
+\setcounter{lemma}{0}
+\setcounter{axiom}{0}
+\setcounter{counterexample}{0}
+\setcounter{conjecture}{0}
+\setcounter{claim}{0}
+\setcounter{remark}{0}
+\setcounter{nlinenum}{0}
+\setcounter{float@type}{4}
+\setcounter{r@tfl@t}{1}
+\setcounter{AlgoLine}{0}
+\setcounter{algocfline}{0}
+\setcounter{algocfproc}{0}
+\setcounter{algocf}{0}
+\setcounter{NAT@ctr}{0}
+}

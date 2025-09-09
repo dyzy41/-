@@ -1,0 +1,391 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\citation{Radford2021LearningTV}
+\citation{Kirillov2023SegmentA}
+\citation{Oquab2023DINOv2LR}
+\citation{simeoni2025dinov3}
+\citation{Koch2015SiameseNN,Wang2022AnES}
+\citation{chen2023continuous,Tian2022LargescaleDL,zhu_land-useland-cover_2022-1}
+\citation{chen_remote_2022,Li2022TransUNetCDAH,Liu2022RemoteSI}
+\citation{Chen2021VisualGPTDA}
+\citation{Song2022CLIPMA}
+\citation{Tang2023InteractingEnhancingFT}
+\citation{Devlin2019BERTPO}
+\citation{AlRahhal2022MultilanguageTF}
+\citation{Liu2022RemoteSI}
+\citation{Radford2021LearningTV}
+\pp@pagectr{footnote}{4}{81}{63}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4\hspace  {.3em}}基于AI基础模型微调的变化检测模型研究}{63}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\addvspace {10.0pt}}
+\@writefile{lot}{\addvspace {10.0pt}}
+\@writefile{loa}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}基于多模态架构的变化检测方法}{63}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}引言}{63}{subsection.4.1.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces ImageNet自然场景图像与遥感图像的比较.}}{64}{figure.caption.51}\protected@file@percent }
+\newlabel{fig:changeclip2}{{4.1}{64}{ImageNet自然场景图像与遥感图像的比较}{figure.caption.51}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces 多模态遥感变化检测架构.}}{64}{figure.caption.52}\protected@file@percent }
+\newlabel{fig:changeclip1}{{4.2}{64}{多模态遥感变化检测架构}{figure.caption.52}{}}
+\citation{Chen2021VisualGPTDA,Lu2019ViLBERTPT}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}ChangeCLIP网络设计}{65}{subsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2.1}ChangeCLIP总体结构设计}{65}{subsubsection.4.1.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2.2}多模态编码器}{65}{subsubsection.4.1.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces 遥感影像中的常见地物类别}}{66}{table.caption.53}\protected@file@percent }
+\newlabel{tab:remote_sensing_categories}{{4.1}{66}{遥感影像中的常见地物类别}{table.caption.53}{}}
+\citation{He2015DeepRL}
+\citation{Dosovitskiy2020AnII}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces ChangeCLIP 变化检测架构。Global Feature (全局特征) 是从图像中获取的、具有物体识别能力的特征信息。Visual Embedding (视觉嵌入) 是高层特征图，被视为图像的嵌入。Pixel-Text Score Map (像素-文本得分图) 是图像与文本提示之间的相关性图。Vision-Language Information (视觉-语言信息) 意味着结合了图像特征和文本特征。}}{67}{figure.caption.54}\protected@file@percent }
+\newlabel{fig:changeclip3}{{4.3}{67}{ChangeCLIP 变化检测架构。Global Feature (全局特征) 是从图像中获取的、具有物体识别能力的特征信息。Visual Embedding (视觉嵌入) 是高层特征图，被视为图像的嵌入。Pixel-Text Score Map (像素-文本得分图) 是图像与文本提示之间的相关性图。Vision-Language Information (视觉-语言信息) 意味着结合了图像特征和文本特征。}{figure.caption.54}{}}
+\newlabel{eq:changeclip-1}{{4.1}{68}{多模态编码器}{equation.4.1}{}}
+\newlabel{eq:changeclip-2}{{4.2}{68}{多模态编码器}{equation.4.2}{}}
+\newlabel{eq:changeclip-3}{{4.3}{68}{多模态编码器}{equation.4.3}{}}
+\newlabel{eq:changeclip-4}{{4.4}{68}{多模态编码器}{equation.4.4}{}}
+\newlabel{eq:changeclip-5}{{4.5}{68}{多模态编码器}{equation.4.5}{}}
+\newlabel{eq:changeclip-6}{{4.6}{68}{多模态编码器}{equation.4.6}{}}
+\newlabel{eq:changeclip-7}{{4.7}{68}{多模态编码器}{equation.4.7}{}}
+\newlabel{eq:changeclip-8}{{4.8}{68}{多模态编码器}{equation.4.8}{}}
+\newlabel{eq:changeclip-9}{{4.9}{69}{多模态编码器}{equation.4.9}{}}
+\newlabel{eq:changeclip-10}{{4.10}{69}{多模态编码器}{equation.4.10}{}}
+\newlabel{eq:changeclip-11}{{4.11}{69}{多模态编码器}{equation.4.11}{}}
+\newlabel{eq:changeclip-12}{{4.12}{69}{多模态编码器}{equation.4.12}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2.3}结合余弦相似度计算的混合差异特征计算方法}{69}{subsubsection.4.1.2.3}\protected@file@percent }
+\citation{lin_feature_2017}
+\citation{Hu2017SqueezeandExcitationN}
+\citation{Liu2021SwinTH}
+\newlabel{eq:changeclip-13}{{4.13}{70}{结合余弦相似度计算的混合差异特征计算方法}{equation.4.13}{}}
+\newlabel{eq:changeclip-14}{{4.14}{70}{结合余弦相似度计算的混合差异特征计算方法}{equation.4.14}{}}
+\newlabel{eq:changeclip-15}{{4.15}{70}{结合余弦相似度计算的混合差异特征计算方法}{equation.4.15}{}}
+\newlabel{eq:changeclip-16}{{4.16}{70}{结合余弦相似度计算的混合差异特征计算方法}{equation.4.16}{}}
+\newlabel{eq:changeclip-17}{{4.17}{70}{结合余弦相似度计算的混合差异特征计算方法}{equation.4.17}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2.4}视觉-语言驱动的变化检测解码器}{71}{subsubsection.4.1.2.4}\protected@file@percent }
+\newlabel{eq:changeclip-18}{{4.18}{71}{视觉-语言驱动的变化检测解码器}{equation.4.18}{}}
+\newlabel{eq:changeclip-19}{{4.19}{71}{视觉-语言驱动的变化检测解码器}{equation.4.19}{}}
+\newlabel{eq:changeclip-20}{{4.20}{71}{视觉-语言驱动的变化检测解码器}{equation.4.20}{}}
+\newlabel{eq:changeclip-21}{{4.21}{71}{视觉-语言驱动的变化检测解码器}{equation.4.21}{}}
+\newlabel{eq:changeclip-22}{{4.22}{71}{视觉-语言驱动的变化检测解码器}{equation.4.22}{}}
+\newlabel{eq:changeclip-23}{{4.23}{71}{视觉-语言驱动的变化检测解码器}{equation.4.23}{}}
+\newlabel{eq:changeclip-24}{{4.24}{71}{视觉-语言驱动的变化检测解码器}{equation.4.24}{}}
+\newlabel{eq:changeclip-25}{{4.25}{71}{视觉-语言驱动的变化检测解码器}{equation.4.25}{}}
+\newlabel{eq:changeclip-26}{{4.26}{71}{视觉-语言驱动的变化检测解码器}{equation.4.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces ChangeCLIP 的差分特征补偿模块和解码结构。Concat Feature 指的是在编码阶段通过将双时相图像拼接而获得的特征图。Bitemporal Difference Map 指的是通过计算余弦相似度得到的差异图。Subtraction Feature 指的是将双时相图像的特征图相减而得到的特征。}}{72}{figure.caption.55}\protected@file@percent }
+\newlabel{fig:changeclip4}{{4.4}{72}{ChangeCLIP 的差分特征补偿模块和解码结构。Concat Feature 指的是在编码阶段通过将双时相图像拼接而获得的特征图。Bitemporal Difference Map 指的是通过计算余弦相似度得到的差异图。Subtraction Feature 指的是将双时相图像的特征图相减而得到的特征。}{figure.caption.55}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}实验结果与分析}{72}{subsection.4.1.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces ChangeCLIP 模型与对比模型在 LEVIR-CD 上的局部可视化对比结果}}{73}{figure.caption.56}\protected@file@percent }
+\newlabel{fig:changeclip_levir}{{4.5}{73}{ChangeCLIP 模型与对比模型在 LEVIR-CD 上的局部可视化对比结果}{figure.caption.56}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3.1}实验结果量化指标与可视化分析}{73}{subsubsection.4.1.3.1}\protected@file@percent }
+\citation{Alcantarilla2016StreetviewCD}
+\citation{chen_spatial-temporal_2020}
+\citation{chen_remote_2022}
+\citation{Mao2022MFATNetMF}
+\citation{bandara2022transformer}
+\citation{Wang2022HMCNetHE}
+\citation{Ye2023AdjacentLevelFC}
+\citation{Liu2022BuildingCD}
+\citation{pei_feature_2022}
+\citation{Song2022RemoteSI}
+\citation{Yuan2022STransUNetAS}
+\citation{Daudt2018FullyCS}
+\citation{Alcantarilla2016StreetviewCD}
+\citation{Daudt2018MultitaskLF}
+\citation{Papadomanolaki2021ADM}
+\citation{Fang2021SNUNetCDAD}
+\citation{Liu2019BuildingCD}
+\citation{chen_remote_2022}
+\citation{Zhang2020ADS}
+\citation{Feng2022ICIFNetIC}
+\citation{Papadomanolaki2021ADM}
+\citation{Fang2021SNUNetCDAD}
+\citation{chen_remote_2022}
+\citation{li_densely_2022}
+\citation{Feng2022ICIFNetIC}
+\citation{Zhang2020ADS}
+\citation{lin_transition_2023}
+\citation{shi_deeply_2022}
+\citation{Lei2022BoundaryEC}
+\citation{zhang_swinsunet_2022}
+\citation{Cheng2022ISNetTI}
+\citation{wan_d-tnet_2022-3}
+\citation{Zhou2022JointFD}
+\citation{Ling2022IRAMRSNetAN}
+\citation{Lu2022RCDTRR}
+\citation{Jiang2022JointVL}
+\citation{shi_deeply_2022}
+\citation{Alcantarilla2016StreetviewCD}
+\citation{Cheng2022ISNetTI}
+\citation{Fang2021SNUNetCDAD}
+\citation{Papadomanolaki2021ADM}
+\citation{Zhang2020ADS}
+\citation{Papadomanolaki2021ADM}
+\citation{li_densely_2022}
+\citation{Feng2022ICIFNetIC}
+\citation{Jiang2022JointVL}
+\citation{Ye2023AdjacentLevelFC}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces ChangeCLIP 模型与对比模型在 LEVIR-CD+ 上的局部可视化对比结果}}{74}{figure.caption.57}\protected@file@percent }
+\newlabel{fig:changeclip_levirplus}{{4.6}{74}{ChangeCLIP 模型与对比模型在 LEVIR-CD+ 上的局部可视化对比结果}{figure.caption.57}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces ChangeCLIP 模型与对比模型在WHUCD数据集上的可视化对比结果}}{74}{figure.caption.63}\protected@file@percent }
+\newlabel{fig:changeclip_whucd}{{4.7}{74}{ChangeCLIP 模型与对比模型在WHUCD数据集上的可视化对比结果}{figure.caption.63}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3.2}ChangeCLIP消融实验}{74}{subsubsection.4.1.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces ChangeCLIP 模型在 LEVIR-CD 数据集上的定量结果}}{75}{table.caption.58}\protected@file@percent }
+\newlabel{tab:changeclip_levir}{{4.2}{75}{ChangeCLIP 模型在 LEVIR-CD 数据集上的定量结果}{table.caption.58}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces ChangeCLIP 模型在 LEVIR-CD+ 数据集上的定量结果}}{75}{table.caption.59}\protected@file@percent }
+\newlabel{tab:changeclip_levirplus}{{4.3}{75}{ChangeCLIP 模型在 LEVIR-CD+ 数据集上的定量结果}{table.caption.59}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces ChangeCLIP 模型在 WHUCD 数据集上的定量结果}}{76}{table.caption.60}\protected@file@percent }
+\newlabel{tab:changeclip_whucd}{{4.4}{76}{ChangeCLIP 模型在 WHUCD 数据集上的定量结果}{table.caption.60}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.5}{\ignorespaces ChangeCLIP 模型在 CDD 数据集上的定量结果}}{76}{table.caption.61}\protected@file@percent }
+\newlabel{tab:changeclip_cdd}{{4.5}{76}{ChangeCLIP 模型在 CDD 数据集上的定量结果}{table.caption.61}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.6}{\ignorespaces ChangeCLIP 模型在SYSU-CD数据集上的定量结果}}{77}{table.caption.62}\protected@file@percent }
+\newlabel{tab:changeclip_sysu}{{4.6}{77}{ChangeCLIP 模型在SYSU-CD数据集上的定量结果}{table.caption.62}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces ChangeCLIP 模型与对比模型在 CDD 上的可视化对比结果}}{77}{figure.caption.64}\protected@file@percent }
+\newlabel{fig:changeclip_cdd}{{4.8}{77}{ChangeCLIP 模型与对比模型在 CDD 上的可视化对比结果}{figure.caption.64}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces ChangeCLIP 模型与对比模型在 SYSU-CD 上的可视化对比结果}}{78}{figure.caption.65}\protected@file@percent }
+\newlabel{fig:changeclip_sysu}{{4.9}{78}{ChangeCLIP 模型与对比模型在 SYSU-CD 上的可视化对比结果}{figure.caption.65}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces 不同的差异特征方法与 ChangeCLIP 的特征热图在 CDD 数据集上的可视化对比结果}}{78}{figure.caption.66}\protected@file@percent }
+\newlabel{fig:changeclip_hotmap}{{4.10}{78}{不同的差异特征方法与 ChangeCLIP 的特征热图在 CDD 数据集上的可视化对比结果}{figure.caption.66}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.7}{\ignorespaces 基于 RN50 骨干的 IoU 消融实验。Base：仅用图像编码器；ME：多模态编码器；I：Image；T：Text；DFC：差异特征补偿；VLDD：视觉-语言驱动解码器；FPN：特征金字塔；FCN：全卷积；Sub：减法。}}{79}{table.caption.67}\protected@file@percent }
+\newlabel{tab:changeclip_ablation_resnet}{{4.7}{79}{基于 RN50 骨干的 IoU 消融实验。Base：仅用图像编码器；ME：多模态编码器；I：Image；T：Text；DFC：差异特征补偿；VLDD：视觉-语言驱动解码器；FPN：特征金字塔；FCN：全卷积；Sub：减法。}{table.caption.67}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.8}{\ignorespaces 基于 ViT-B/16 骨干的 IoU 消融实验。记号同表 \ref {tab:changeclip_ablation_resnet}。}}{79}{table.caption.68}\protected@file@percent }
+\newlabel{tab:changeclip_ablation_vit}{{4.8}{79}{基于 ViT-B/16 骨干的 IoU 消融实验。记号同表 \ref {tab:changeclip_ablation_resnet}。}{table.caption.68}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.9}{\ignorespaces ChangeCLIP模型在RSCD数据集上基于ResNet-50和ViT-B/16骨干模型的结果}}{80}{table.caption.69}\protected@file@percent }
+\newlabel{tab:changeclip_backbone}{{4.9}{80}{ChangeCLIP模型在RSCD数据集上基于ResNet-50和ViT-B/16骨干模型的结果}{table.caption.69}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3.3}ChangeCLIP在不同的骨架网络的结果}{80}{subsubsection.4.1.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3.4}ChangeCLIP中差异特征图热图可视化分析}{80}{subsubsection.4.1.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.4}讨论}{81}{subsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4.1}基于多模态视觉-语言表示学习的变化检测}{81}{subsubsection.4.1.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4.2}image-score map的应用}{81}{subsubsection.4.1.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4.3}差异特征计算}{81}{subsubsection.4.1.4.3}\protected@file@percent }
+\citation{Kirillov2023SegmentA}
+\citation{Caron2021EmergingPI,simeoni2025dinov3}
+\citation{Radford2021LearningTV}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.5}小结}{82}{subsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}基于视觉基础模型微调的变化检测方法}{82}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}引言}{82}{subsection.4.2.1}\protected@file@percent }
+\citation{LORA}
+\citation{adapter}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.11}{\ignorespaces PeftCD 架构示意图。双时相影像通过注入 PEFT 模块的共享视觉基础模型编码器进行特征提取，特征在解码前进行交换，最终生成变化检测图。}}{83}{figure.caption.70}\protected@file@percent }
+\newlabel{fig:peftcd_framework}{{4.11}{83}{PeftCD 架构示意图。双时相影像通过注入 PEFT 模块的共享视觉基础模型编码器进行特征提取，特征在解码前进行交换，最终生成变化检测图。}{figure.caption.70}{}}
+\citation{ravi2024sam}
+\citation{Kirillov2023SegmentA}
+\citation{simeoni2025dinov3}
+\citation{Zhou2021iBOTIB}
+\citation{LORA}
+\citation{adapter}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}视觉基础模型简介}{84}{subsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2.1}分割基础模型：SAM2}{84}{subsubsection.4.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2.2}自监督表征学习模型：DINOv3}{84}{subsubsection.4.2.2.2}\protected@file@percent }
+\citation{LORA}
+\citation{adapter}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}参数高效微调方法}{85}{subsection.4.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3.1}低秩适配（LoRA）}{85}{subsubsection.4.2.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3.2}Adapter}{85}{subsubsection.4.2.3.2}\protected@file@percent }
+\newlabel{eq:adapter}{{4.30}{85}{Adapter}{equation.4.30}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.4}PeftCD模型架构}{85}{subsection.4.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4.1}整体思路}{85}{subsubsection.4.2.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.10}{\ignorespaces PeftCD 所用的 PEFT 配置。LoRA 设置 \textbf  {dropout}=0.1，注入于 \texttt  {qkv} 投影层。所有编码器权重均被冻结，仅 PEFT 模块可训练。Adapter 在每个编码器块前插入残差 MLP 结构。}}{86}{table.caption.71}\protected@file@percent }
+\newlabel{tab:peftcd_cfg}{{4.10}{86}{PeftCD 所用的 PEFT 配置。LoRA 设置 \textbf {dropout}=0.1，注入于 \texttt {qkv} 投影层。所有编码器权重均被冻结，仅 PEFT 模块可训练。Adapter 在每个编码器块前插入残差 MLP 结构。}{table.caption.71}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.12}{\ignorespaces 基于 SAM2 的 PeftCD 模型架构示意图。双时相影像输入共享的、插入了PEFT模块的SAM2编码器。提取的特征金字塔经过特征交换后，送入共享的解码器，最终生成变化图。}}{86}{figure.caption.72}\protected@file@percent }
+\newlabel{fig:peftcd_sam2cd}{{4.12}{86}{基于 SAM2 的 PeftCD 模型架构示意图。双时相影像输入共享的、插入了PEFT模块的SAM2编码器。提取的特征金字塔经过特征交换后，送入共享的解码器，最终生成变化图。}{figure.caption.72}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4.2}双时相特征处理与变化检测范式}{87}{subsubsection.4.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4.3}基于 SAM2 的 PeftCD架构}{87}{subsubsection.4.2.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.13}{\ignorespaces 基于DINOv3的PeftCD模型架构（DINOv3CD）。该模型采用与SAM2CD类似的SEED范式，但其核心编码器替换为DINOv3，旨在利用其强大的自监督表征来提升对伪变化的鲁棒性。}}{88}{figure.caption.73}\protected@file@percent }
+\newlabel{fig:peftcd_dino3cd}{{4.13}{88}{基于DINOv3的PeftCD模型架构（DINOv3CD）。该模型采用与SAM2CD类似的SEED范式，但其核心编码器替换为DINOv3，旨在利用其强大的自监督表征来提升对伪变化的鲁棒性。}{figure.caption.73}{}}
+\citation{chen_spatial-temporal_2020}
+\citation{shi_deeply_2022}
+\citation{chen_remote_2022}
+\citation{lin_transition_2023}
+\citation{Xu2024HybridAT}
+\citation{li_densely_2022}
+\citation{Jiang2022JointVL}
+\citation{wei_robust_2024}
+\citation{z_wang_bitemporal_2024}
+\citation{dong2024changeclip}
+\citation{Chen2025AGFormerAA}
+\citation{zhao_exchanging_2023}
+\citation{chen2024changemamba}
+\citation{Li2025DifferenceEA}
+\citation{Zhan2025DifferenceAwareMF}
+\citation{li_overcoming_2025}
+\citation{f_zhou_dual-granularity_2025}
+\citation{t_zhu_fta-net_2025}
+\citation{Liu2025CWmambaLC}
+\citation{Li2025SAMMambaATC}
+\citation{Zhou2025DepthCDDP}
+\citation{Liu2025CDSTMambaTR}
+\citation{lin_transition_2023}
+\citation{Zhang2020ADS}
+\citation{m_liu_cnn-transformer_2022}
+\citation{zhao_exchanging_2023}
+\citation{chen_remote_2022}
+\citation{Han2023HCGMNetAH}
+\citation{dong2024changeclip}
+\citation{wei_robust_2024}
+\citation{han_change_2023}
+\citation{dong_efficientcd_2024}
+\citation{Fu2025BeyondCD}
+\citation{Xu2024HybridAT}
+\citation{pei_feature_2022}
+\citation{chen_remote_2022}
+\citation{ding2024adapting}
+\citation{feng_change_2023}
+\citation{Ying2025AEGLNetAM}
+\citation{Han2025HFIFNetHF}
+\citation{j_chen_sganet_2025}
+\citation{wei_robust_2024}
+\citation{Chen2025AGFormerAA}
+\citation{Fang2022ChangerFI}
+\citation{Liu2025CWmambaLC}
+\citation{Yang2025ConvFormerCDHC}
+\@writefile{toc}{\contentsline {paragraph}{孪生编码器与PEFT注入}{89}{paragraph*.74}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.14}{\ignorespaces PeftCD 模型与对比模型在 SYSU-CD 数据集上的可视化对比结果}}{89}{figure.caption.76}\protected@file@percent }
+\newlabel{fig:peftcd_sysu}{{4.14}{89}{PeftCD 模型与对比模型在 SYSU-CD 数据集上的可视化对比结果}{figure.caption.76}{}}
+\@writefile{toc}{\contentsline {paragraph}{基于交换的特征交互}{89}{paragraph*.81}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.11}{\ignorespaces PeftCD 与经典变化检测模型在 SYSU-CD 数据集上的定量对比结果}}{90}{table.caption.75}\protected@file@percent }
+\newlabel{tab:peftcd_sysu}{{4.11}{90}{PeftCD 与经典变化检测模型在 SYSU-CD 数据集上的定量对比结果}{table.caption.75}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.12}{\ignorespaces PeftCD 与经典变化检测模型在 WHUCD 数据集上的定量对比结果}}{91}{table.caption.77}\protected@file@percent }
+\newlabel{tab:peftcd_whucd}{{4.12}{91}{PeftCD 与经典变化检测模型在 WHUCD 数据集上的定量对比结果}{table.caption.77}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.15}{\ignorespaces PeftCD 模型与对比模型在 WHUCD 数据集上的可视化对比结果}}{91}{figure.caption.78}\protected@file@percent }
+\newlabel{fig:peftcd_whucd}{{4.15}{91}{PeftCD 模型与对比模型在 WHUCD 数据集上的可视化对比结果}{figure.caption.78}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.13}{\ignorespaces PeftCD 与经典变化检测模型在 S2Looking 数据集上的定量对比结果}}{92}{table.caption.79}\protected@file@percent }
+\newlabel{tab:peftcd_s2looking}{{4.13}{92}{PeftCD 与经典变化检测模型在 S2Looking 数据集上的定量对比结果}{table.caption.79}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.16}{\ignorespaces PeftCD 模型与对比模型在 S2Looking 数据集上的可视化对比结果}}{92}{figure.caption.80}\protected@file@percent }
+\newlabel{fig:peftcd_s2looking}{{4.16}{92}{PeftCD 模型与对比模型在 S2Looking 数据集上的可视化对比结果}{figure.caption.80}{}}
+\citation{chen_spatial-temporal_2020}
+\citation{zhao_exchanging_2023}
+\citation{bandara2022transformer}
+\citation{Chen2021FCCDNFC}
+\citation{Hang2024AANetAA}
+\citation{Ma2024EATDerEA}
+\citation{Liu2025NetworkAD}
+\citation{feng_change_2023}
+\citation{z_wang_bitemporal_2024}
+\citation{wei_robust_2024}
+\citation{Liu2025FullScaleCD}
+\citation{chen_spatial-temporal_2020}
+\citation{h_ren_interactive_2025}
+\citation{Huang2025SAMBasedEF}
+\citation{li_densely_2022}
+\citation{z_wang_bitemporal_2024}
+\citation{chen_remote_2022}
+\citation{feng_change_2023}
+\@writefile{toc}{\contentsline {paragraph}{孪生解码与监督}{93}{paragraph*.82}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.14}{\ignorespaces PeftCD 与经典变化检测模型在 MSRSCD 数据集上的定量对比结果}}{93}{table.caption.83}\protected@file@percent }
+\newlabel{tab:peftcd_msrscd}{{4.14}{93}{PeftCD 与经典变化检测模型在 MSRSCD 数据集上的定量对比结果}{table.caption.83}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4.4}基于 DINOv3 的 PeftCD架构}{93}{subsubsection.4.2.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.17}{\ignorespaces PeftCD 与对比模型在 MSRSCD 数据集上的可视化对比结果.}}{94}{figure.caption.84}\protected@file@percent }
+\newlabel{fig:peftcd_msrscd}{{4.17}{94}{PeftCD 与对比模型在 MSRSCD 数据集上的可视化对比结果}{figure.caption.84}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.15}{\ignorespaces PeftCD 与经典变化检测模型在 MLCD 数据集上的定量对比结果}}{94}{table.caption.85}\protected@file@percent }
+\newlabel{tab:peftcd_mlcd}{{4.15}{94}{PeftCD 与经典变化检测模型在 MLCD 数据集上的定量对比结果}{table.caption.85}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.18}{\ignorespaces PeftCD 与对比模型在 MLCD 数据集上的可视化对比结果.}}{94}{figure.caption.86}\protected@file@percent }
+\newlabel{fig:peftcd_mlcd}{{4.18}{94}{PeftCD 与对比模型在 MLCD 数据集上的可视化对比结果}{figure.caption.86}{}}
+\citation{lin_feature_2017}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.5}基于同尺度多层融合与上下文增强的解码器}{95}{subsection.4.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5.1}同尺度多层特征的深度注意力融合}{95}{subsubsection.4.2.5.1}\protected@file@percent }
+\citation{z_wang_bitemporal_2024}
+\citation{li_overcoming_2025}
+\citation{lu_cross_2024}
+\citation{zhang_cdmamba_2025}
+\citation{y_xing_sffce-cd_2025}
+\citation{m_noman_elgc-net_2024}
+\citation{f_zhou_dual-granularity_2025}
+\citation{zhang_global-aware_2023}
+\citation{Li2025DifferenceEA}
+\citation{Zhang2025ADS}
+\citation{Liu2025CDSTMambaTR}
+\citation{d_sidekejiang_mldfnet_2025}
+\citation{Noman2023RemoteSC}
+\citation{li_dual_2025}
+\citation{x_li_dsfi-cd_2025}
+\citation{c_tao_hasnet_2025}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5.2}上下文增强与渐进式上采样}{96}{subsubsection.4.2.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.6}实验结果与分析}{96}{subsection.4.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.6.1}实验结果量化指标与可视化分析}{96}{subsubsection.4.2.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.16}{\ignorespaces PeftCD 与经典变化检测模型在 CDD 数据集上的定量对比结果}}{97}{table.caption.87}\protected@file@percent }
+\newlabel{tab:peftcd_cdd}{{4.16}{97}{PeftCD 与经典变化检测模型在 CDD 数据集上的定量对比结果}{table.caption.87}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.19}{\ignorespaces PeftCD 与对比模型在 CDD 数据集上的可视化对比结果.}}{97}{figure.caption.88}\protected@file@percent }
+\newlabel{fig:peftcd_cdd}{{4.19}{97}{PeftCD 与对比模型在 CDD 数据集上的可视化对比结果}{figure.caption.88}{}}
+\citation{chen_spatial-temporal_2020}
+\citation{m_liu_cnn-transformer_2022}
+\citation{Mao2022MFATNetMF}
+\citation{bandara2022transformer}
+\citation{lin_transition_2023}
+\citation{zhang_cdmamba_2025}
+\citation{Liu2023AnAM}
+\citation{Zhang2024B2CNetAP}
+\citation{f_zhou_dual-granularity_2025}
+\citation{Xu2024HybridAT}
+\citation{Song2022RemoteSI}
+\citation{Li2025DifferenceEA}
+\citation{Yuan2022STransUNetAS}
+\citation{Huang2025LCCDMambaVS}
+\citation{Chen2025AGFormerAA}
+\citation{Zhang2025ADS}
+\citation{Han2023HCGMNetAH}
+\citation{Fang2022ChangerFI}
+\citation{Zhan2025DifferenceAwareMF}
+\citation{han_change_2023}
+\citation{dong_efficientcd_2024}
+\citation{t_zhu_fta-net_2025}
+\@writefile{lot}{\contentsline {table}{\numberline {4.17}{\ignorespaces PeftCD 模型与经典变化检测模型在 LEVIR-CD 数据集上的定量对比结果}}{98}{table.caption.89}\protected@file@percent }
+\newlabel{tab:peftcd_levir}{{4.17}{98}{PeftCD 模型与经典变化检测模型在 LEVIR-CD 数据集上的定量对比结果}{table.caption.89}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.20}{\ignorespaces PeftCD 与对比模型在 LEVIR-CD 数据集上的可视化对比结果.}}{99}{figure.caption.90}\protected@file@percent }
+\newlabel{fig:peftcd_levir}{{4.20}{99}{PeftCD 与对比模型在 LEVIR-CD 数据集上的可视化对比结果}{figure.caption.90}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.6.2}消融实验}{99}{subsubsection.4.2.6.2}\protected@file@percent }
+\newlabel{tab:peftcd_dino3cd_ablation}{{4.2.6.2}{100}{消融实验}{subsubsection.4.2.6.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.18}{\ignorespaces 不同主干模型与参数高效微调（PEFT）方法的消融实验结果（IoU \%）}}{100}{table.caption.91}\protected@file@percent }
+\newlabel{tab:peftcd_ablation}{{4.18}{100}{不同主干模型与参数高效微调（PEFT）方法的消融实验结果（IoU \%）}{table.caption.91}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.19}{\ignorespaces DINO3CD中多层融合与上下文增强解码器的消融实验结果（IoU \%）}}{100}{table.caption.92}\protected@file@percent }
+\newlabel{tab:peftcd_dino3cd_ablation}{{4.19}{100}{DINO3CD中多层融合与上下文增强解码器的消融实验结果（IoU \%）}{table.caption.92}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.7}讨论}{100}{subsection.4.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.7.1}基于单尺度 ViT 骨干的解码}{100}{subsubsection.4.2.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.7.2}变化检测的 PEFT 策略}{101}{subsubsection.4.2.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.8}小结}{101}{subsection.4.2.8}\protected@file@percent }
+\@setckpt{pages/chapter4}{
+\setcounter{page}{102}
+\setcounter{equation}{32}
+\setcounter{enumi}{4}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{4}
+\setcounter{section}{2}
+\setcounter{subsection}{8}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{20}
+\setcounter{table}{19}
+\setcounter{parentequation}{0}
+\setcounter{section@level}{0}
+\setcounter{Item}{7}
+\setcounter{Hfootnote}{0}
+\setcounter{Hy@AnnotLevel}{0}
+\setcounter{bookmark@seq@number}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{pp@a@footnote}{4}
+\setcounter{thmt@dummyctr}{0}
+\setcounter{lofdepth}{1}
+\setcounter{lotdepth}{1}
+\setcounter{theorem}{0}
+\setcounter{example}{0}
+\setcounter{question}{0}
+\setcounter{definition}{0}
+\setcounter{property}{0}
+\setcounter{proposition}{0}
+\setcounter{corollary}{0}
+\setcounter{lemma}{0}
+\setcounter{axiom}{0}
+\setcounter{counterexample}{0}
+\setcounter{conjecture}{0}
+\setcounter{claim}{0}
+\setcounter{remark}{0}
+\setcounter{nlinenum}{0}
+\setcounter{float@type}{4}
+\setcounter{r@tfl@t}{1}
+\setcounter{AlgoLine}{0}
+\setcounter{algocfline}{0}
+\setcounter{algocfproc}{0}
+\setcounter{algocf}{0}
+\setcounter{NAT@ctr}{0}
+}
